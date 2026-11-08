@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Native splash shown by the OS before the Flutter engine draws its first
+    frame. Matches lib/features/splash/splash_screen.dart exactly:
+    - Same vertical gradient (#060912 -> #111032, top to bottom) as the
+      Flutter splash's Container decoration.
+    - Same logo + "VoiChat" wordmark, pre-rendered (see
+      drawable-*dpi/launch_logo.png) since the wordmark's gradient text and
+      custom ZenDots font can't be reproduced with plain Android XML.
+    Regenerate launch_logo.png (all densities) if the logo, colors, or
+    wordmark in splash_screen.dart ever change.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#FF060912"
+                android:endColor="#FF111032" />
+        </shape>
+    </item>
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/launch_logo" />
+    </item>
+</layer-list>

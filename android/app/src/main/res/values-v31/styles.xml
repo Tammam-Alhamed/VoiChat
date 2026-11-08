@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Android 12+ (API 31+) ignores android:windowBackground for the cold
+        start splash and shows its OWN system splash screen instead — an
+        icon centered on a solid color, picked from the
+        windowSplashScreen* theme attributes below (falling back to plain
+        white if they're not set). That's exactly the "white background
+        behind the logo" the person saw: values/styles.xml's
+        launch_background.xml (the gradient + full wordmark) was never
+        being shown at all on API 31+ devices, only the OS's own splash
+        with default/no styling.
+
+        This overlay (selected automatically on API 31+ by the -v31
+        qualifier, merged with the base LaunchTheme from
+        values/styles.xml) points the system splash at our own dark navy
+        and the "V" mark (drawable/launch_icon, a logo-only crop — the
+        full "VoiChat" wordmark doesn't fit the icon-safe zone the system
+        masks to). It's on screen only for an instant before Flutter's own
+        splash_screen.dart (the exact full design) takes over.
+    -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowSplashScreenBackground">#FF111032</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/launch_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#FF111032</item>
+    </style>
+</resources>

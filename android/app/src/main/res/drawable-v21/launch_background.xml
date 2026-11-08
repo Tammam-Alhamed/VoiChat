@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Native splash shown by the OS before the Flutter engine draws its first
+    frame. Matches lib/features/splash/splash_screen.dart exactly — see the
+    comment in drawable/launch_background.xml for details.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#FF060912"
+                android:endColor="#FF111032" />
+        </shape>
+    </item>
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/launch_logo" />
+    </item>
+</layer-list>

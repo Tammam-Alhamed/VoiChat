@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "950236066689",
+    "project_id": "voichat-e4117",
+    "storage_bucket": "voichat-e4117.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950236066689:android:da309364ee476c0c246e80",
+        "android_client_info": {
+          "package_name": "com.voi.chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHDSk0E4n7SeAt74g0EnEERn_JDg2SNnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

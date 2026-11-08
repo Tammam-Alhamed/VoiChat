@@ -1,0 +1,30 @@
+# Flutter/Dart generated files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+
+# Android local build and machine configuration
+/android/.gradle/
+/android/.kotlin/
+/android/local.properties
+/android/build/
+/android/app/build/
+/android/hs_err_pid*.log
+/android/replay_pid*.log
+*.log
+
+# Generated iOS build configuration
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+/ios/Flutter/ephemeral/
+
+# IDE and editor state
+.idea/
+.vscode/
+*.iml
+
+# Local OS files
+.DS_Store
+Thumbs.db

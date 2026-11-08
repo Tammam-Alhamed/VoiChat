@@ -1,0 +1,18 @@
+core/
+├── config/
+│   ├── app_config.dart
+│   └── theme_config.dart
+├── network/
+│   ├── api_client.dart
+│   ├── api_endpoints.dart
+│   └── network_info.dart
+├── utils/
+│   ├── app_utils.dart
+│   ├── cache_manager.dart
+│   └── validators.dart
+├── error/
+│   ├── exceptions.dart
+│   └── failures.dart
+└── constants/
+    ├── app_constants.dart
+    └── assets_constants.dart

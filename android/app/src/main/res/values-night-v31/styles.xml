@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Same Android 12+ system-splash override as values-v31/styles.xml,
+        for devices in dark mode (parent matches values-night/styles.xml's
+        LaunchTheme instead of the light one).
+    -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowSplashScreenBackground">#FF111032</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/launch_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#FF111032</item>
+    </style>
+</resources>
