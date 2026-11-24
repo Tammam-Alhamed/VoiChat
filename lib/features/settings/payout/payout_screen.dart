@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/helpers/store_helper.dart';
 import '../../../core/helpers/toast_helper.dart';
@@ -23,6 +24,12 @@ class PayoutScreen extends StatefulWidget {
 }
 
 class _PayoutScreenState extends State<PayoutScreen> {
+  static final RegExp _thousandsPattern = RegExp(r'\B(?=(\d{3})+(?!\d))');
+  static final RegExp _amountPattern = RegExp(r'^\d*\.?\d*$');
+  static final RegExp _displayAmountPattern = RegExp(
+    r'^(-?)(\d+)(?:\.(\d+))?$',
+  );
+
   final ServiceHelper _serviceHelper = sl<ServiceHelper>();
   final StoreHelper _storeHelper = sl<StoreHelper>();
 
@@ -33,6 +40,60 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   bool _isLoadingBalance = true;
   double _balance = 0;
+  String _balanceRaw = '0';
+
+  String _formatPayoutNumber(String? value) {
+    final match = _displayAmountPattern.firstMatch(value?.trim() ?? '');
+    if (match == null) return '0.00';
+
+    final whole = match.group(2)!.replaceAllMapped(
+      _thousandsPattern,
+      (_) => ',',
+    );
+    final fraction = (match.group(3) ?? '').padRight(2, '0');
+    return '${match.group(1)}$whole.$fraction';
+  }
+
+  TextEditingValue _formatAmountInput(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final raw = newValue.text.replaceAll(',', '');
+    if (!_amountPattern.hasMatch(raw)) return oldValue;
+
+    final dotIndex = raw.indexOf('.');
+    final whole = dotIndex == -1 ? raw : raw.substring(0, dotIndex);
+    final fraction = dotIndex == -1 ? '' : raw.substring(dotIndex);
+    final formatted =
+        whole.replaceAllMapped(_thousandsPattern, (_) => ',') + fraction;
+
+    int formattedOffset(int offset) {
+      final rawOffset = newValue.text
+          .substring(0, offset.clamp(0, newValue.text.length))
+          .replaceAll(',', '')
+          .length;
+      if (rawOffset == 0) return 0;
+      var seen = 0;
+      for (var i = 0; i < formatted.length; i++) {
+        if (formatted[i] != ',') seen++;
+        if (seen == rawOffset) {
+          return i + 1;
+        }
+      }
+      return formatted.length;
+    }
+
+    final selection = newValue.selection;
+    return TextEditingValue(
+      text: formatted,
+      selection: selection.isValid
+          ? TextSelection(
+              baseOffset: formattedOffset(selection.baseOffset),
+              extentOffset: formattedOffset(selection.extentOffset),
+            )
+          : TextSelection.collapsed(offset: formatted.length),
+    );
+  }
 
   @override
   void initState() {
@@ -43,6 +104,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     final cached = Get.find<SessionController>().session?.user?.walletBalance;
     if (cached != null) {
       _balance = double.tryParse(cached) ?? 0;
+      _balanceRaw = cached;
     }
     _fetchWallet();
   }
@@ -68,7 +130,11 @@ class _PayoutScreenState extends State<PayoutScreen> {
             : response.data as Map<String, dynamic>;
         final raw = body['data']?['wallet_balance']?.toString();
         if (raw != null) {
-          _balance = double.tryParse(raw) ?? _balance;
+          final parsed = double.tryParse(raw);
+          if (parsed != null) {
+            _balance = parsed;
+            _balanceRaw = raw;
+          }
           // Keep the app-wide cached balance in sync too.
           if (mounted) {
             Get.find<SessionController>().session?.user?.walletBalance = raw;
@@ -83,14 +149,16 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Future<void> _onWithdrawalTap() async {
-    final amount = double.tryParse(_amountController.text.trim());
+    final amount = double.tryParse(
+      _amountController.text.replaceAll(',', '').trim(),
+    );
 
     if (amount == null || amount <= 0) {
-      ToastHelper.showErrorToast(message: 'Enter a valid withdrawal amount');
+      ToastHelper.showErrorToast(message: 'payout_invalid_amount'.tr);
       return;
     }
     if (amount > _balance) {
-      ToastHelper.showErrorToast(message: 'Amount exceeds available balance');
+      ToastHelper.showErrorToast(message: 'payout_amount_exceeds_balance'.tr);
       return;
     }
 
@@ -126,25 +194,28 @@ class _PayoutScreenState extends State<PayoutScreen> {
           children: [
             // 1. الشريط العلوي (App Bar)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsetsDirectional.only(
+                end: 16,
+                top: 4,
+                bottom: 4,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      InkWell(
-                        onTap: () => Navigator.maybePop(context),
-                        borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
+                      SizedBox(
+                        width: 44,
+                        child: IconButton(
+                          onPressed: () => Navigator.maybePop(context),
+                          icon: Icon(
                             Icons.arrow_back_ios_new,
                             color: context.shellTextPrimary,
                             size: 22,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       Text(
                         'Payout',
                         style: TextStyle(
@@ -163,10 +234,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                     onTap: () {
                       Get.to(const PayoutHistoryScreen());
                     },
-                    child: Icon(
-                      Icons.history,
-                      color: context.shellTextPrimary,
-                    ),
+                    child: Icon(Icons.history, color: context.shellTextPrimary),
                   ),
                 ],
               ),
@@ -176,99 +244,128 @@ class _PayoutScreenState extends State<PayoutScreen> {
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                  ), // مسافة جانبية للتركيز
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center, // توسيط المحتوى
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 48),
 
                       // عنوان الرصيد المتاح
                       Text(
-                        'Available Balance',
+                        'payout_available_balance'.tr,
                         style: TextStyle(
                           color: context.shellTextPrimary,
-                          fontSize: 22,
+                          fontSize: 20,
                           fontFamily: 'Roboto',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                           letterSpacing: 0.02,
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // الرصيد الإجمالي — رقم صحيح دائماً بدون فواصل
-                      // (نفس تنسيق الواليت بكل شاشات التطبيق).
+                      // Wallet balance and total earnings come from their
+                      // existing, separate user fields.
                       _isLoadingBalance
                           ? const SizedBox(
                               width: 32,
                               height: 32,
                               child: CircularProgressIndicator(strokeWidth: 3),
                             )
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
+                          : Column(
                               children: [
-                                Text(
-                                  WalletHelper.format(_balance),
-                                  style: TextStyle(
-                                    color: context.shellTextPrimary,
-                                    fontSize: 32,
-                                    fontFamily: 'Roboto',
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.02,
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      '${_formatPayoutNumber(_balanceRaw)} \$',
+                                      style: TextStyle(
+                                        color: context.shellTextPrimary,
+                                        fontSize: 42,
+                                        fontFamily: 'Roboto',
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.diamond_outlined,
-                                  size: 22,
-                                  color: Colors.blueAccent,
+                                const SizedBox(height: 14),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          WalletHelper.format(
+                                            Get.find<SessionController>()
+                                                .session
+                                                ?.user
+                                                ?.totalEarnings,
+                                          ).replaceAllMapped(
+                                            _thousandsPattern,
+                                            (_) => ',',
+                                          ),
+                                          style: TextStyle(
+                                            color: context.shellTextPrimary,
+                                            fontSize: 19,
+                                            fontFamily: 'Roboto',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Icon(
+                                          Icons.diamond_outlined,
+                                          size: 20,
+                                          color: context.shellTextPrimary,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 34),
 
                       // حقل إدخال المبلغ المراد سحبه (Amount)
                       Container(
                         width: double.infinity,
-                        height: 50,
+                        height: 52,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: context.themedColor(
-                            const Color(0xFFF5F5F5),
+                            const Color(0xFFF3F3F3),
                             AppDarkColors.card,
                           ),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: context.themedColor(
-                              const Color(0xFFEDEDED),
-                              AppDarkColors.border,
-                            ),
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
                             Text(
-                              'Amount',
+                              'payout_amount'.tr,
                               style: TextStyle(
                                 color: context.shellTextSecondary,
-                                fontSize: 14,
+                                fontSize: 15,
                                 fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: 20),
                             Expanded(
                               child: TextField(
                                 controller: _amountController,
+                                inputFormatters: [
+                                  TextInputFormatter.withFunction(
+                                    _formatAmountInput,
+                                  ),
+                                ],
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
                                       decimal: true,
                                     ),
                                 style: TextStyle(
                                   color: context.shellTextPrimary,
-                                  fontSize: 16,
+                                  fontSize: 18,
                                   fontFamily: 'Roboto',
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -279,24 +376,26 @@ class _PayoutScreenState extends State<PayoutScreen> {
                                 ),
                               ),
                             ),
+                            Icon(
+                              Icons.attach_money,
+                              size: 20,
+                              color: context.shellTextPrimary,
+                            ),
                           ],
                         ),
                       ),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 30),
 
                       // خيارات السحب (Bank Transfer / Agent Payout)
                       _buildPayoutMethodOption(
-                        title: 'Bank Transfer',
+                        title: 'payout_bank_transfer'.tr,
                         index: 0,
-                        hasSettingsIcon:
-                            true, // الخيار البنكي قد يحتاج إعدادات إضافية
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 14),
                       _buildPayoutMethodOption(
-                        title: 'Agent Payout',
+                        title: 'payout_agent_payout'.tr,
                         index: 1,
-                        hasSettingsIcon: false,
                       ),
                     ],
                   ),
@@ -306,30 +405,35 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
             // 3. زر السحب (Withdrawal Button) في أسفل الشاشة
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.fromLTRB(
+                24,
+                16,
+                24,
+                MediaQuery.viewInsetsOf(context).bottom > 0 ? 16 : 58,
+              ),
               child: InkWell(
                 onTap: _onWithdrawalTap,
                 borderRadius: BorderRadius.circular(50),
                 child: Container(
                   width: double.infinity, // يأخذ عرض الشاشة بالكامل باحترافية
-                  height: 60,
+                  height: 56,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [
-                        Color(0xFF7247EF),
-                        Color(0xFFB862E1),
+                        Color(0xFF6825F3),
+                        Color(0xFFBA08E4),
                       ], // تدرج لون البنفسجي للوردي
                     ),
                     borderRadius: BorderRadius.circular(50),
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
-                    'Withdrawal',
-                    style: TextStyle(
+                  child: Text(
+                    'payout_withdraw'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 20, // حجم مناسب للزر
+                      fontSize: 23,
                       fontFamily: 'Roboto',
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.02,
@@ -347,69 +451,64 @@ class _PayoutScreenState extends State<PayoutScreen> {
   // ==========================================
   // ودجت لبرمجة خيارات طرق السحب (Radio Button System)
   // ==========================================
-  Widget _buildPayoutMethodOption({
-    required String title,
-    required int index,
-    required bool hasSettingsIcon,
-  }) {
-    bool isSelected = _selectedPayoutMethod == index;
+  Widget _buildPayoutMethodOption({required String title, required int index}) {
+    final isSelected = _selectedPayoutMethod == index;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          width: 1,
-          color: context.themedColor(Colors.black12, AppDarkColors.border),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        setState(() {
+          _selectedPayoutMethod = index;
+        });
+      },
+      child: Container(
+        height: 54,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: context.themedColor(
+              const Color(0xFFD9D9D9),
+              AppDarkColors.border,
+            ),
+          ),
         ),
-      ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _selectedPayoutMethod = index;
-          });
-        },
         child: Row(
           children: [
-            // الدائرة الخاصة بالاختيار (Radio Icon)
             Container(
-              width: 20,
-              height: 20,
+              width: 22,
+              height: 22,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF7B13E2) : Colors.grey,
+                  color: isSelected
+                      ? const Color(0xFF8B12DF)
+                      : const Color(0xFFA0A0A0),
                   width: 2,
                 ),
               ),
-              padding: const EdgeInsets.all(3), // مسافة للون الداخلي
+              padding: const EdgeInsets.all(4),
               child: isSelected
                   ? Container(
                       decoration: const BoxDecoration(
-                        color: Color(0xFF7B13E2),
+                        color: Color(0xFF8B12DF),
                         shape: BoxShape.circle,
                       ),
                     )
                   : null,
             ),
             const SizedBox(width: 16),
-
-            // اسم طريقة الدفع
-            Text(
-              title,
-              style: TextStyle(
-                color: context.shellTextPrimary,
-                fontSize: 18,
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.02,
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: context.shellTextPrimary,
+                  fontSize: 20,
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-
-            const Spacer(),
-
-            // أيقونة إعدادات (إذا لزم الأمر، كما في تصميمك بجانب Bank Transfer)
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
           ],
         ),
       ),

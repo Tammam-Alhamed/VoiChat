@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -34,6 +33,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late PageController _pageController;
+  final GlobalKey<HomeTabState> _homeTabKey = GlobalKey<HomeTabState>();
+  DateTime? _lastHomeRefreshBack;
 
   // Bottom-nav tabs load on demand: a tab's real widget (and its data
   // fetch) is only constructed the first time the user actually opens it.
@@ -80,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Keeps the visible page and the selected tab the same even when the tab
   /// is changed from elsewhere (e.g. the live room's Chat button).
   void _syncPageWithNav() {
+    if (_navProvider.currentIndex != 0) _lastHomeRefreshBack = null;
     if (!mounted || !_pageController.hasClients) return;
     final index = _navProvider.currentIndex;
     if (_pageController.page?.round() == index) return;
@@ -96,50 +98,48 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  /// Switches back to the Home tab (used when back is pressed from any
-  /// other bottom-nav tab).
+  /// Returns to the main Home feed on a single back press.
   void _goToHomeTab(NavigationController navProvider) {
+    _lastHomeRefreshBack = null;
     _markVisited(0);
-    _pageController.jumpToPage(0);
+    if (_pageController.hasClients) _pageController.jumpToPage(0);
     navProvider.updateIndex(0);
+    _homeTabKey.currentState?.showHome();
   }
 
-  Future<void> _handleBackPress(NavigationController navProvider) async {
-    if (navProvider.currentIndex != 0) {
+  void _refreshHomeWithIndicator() {
+    final homeTab = _homeTabKey.currentState;
+    if (homeTab != null) {
+      homeTab.refreshHomeWithIndicator();
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final homeTab = _homeTabKey.currentState;
+        if (homeTab != null) {
+          homeTab.refreshHomeWithIndicator();
+        } else {
+          Get.find<DiscoverController>().fetchHomeClients();
+        }
+      });
+    }
+  }
+
+  void _handleBackPress(NavigationController navProvider) {
+    if (navProvider.currentIndex != 0 ||
+        (_homeTabKey.currentState?.index ?? 0) != 0) {
       _goToHomeTab(navProvider);
       return;
     }
-    await _showExitConfirmationDialog();
-  }
 
-  Future<void> _showExitConfirmationDialog() async {
-    final confirmed = await Get.dialog<bool>(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'exit_app'.tr,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: Text('exit_app_confirm'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: false),
-            child: Text('cancel'.tr),
-          ),
-          TextButton(
-            onPressed: () => Get.back(result: true),
-            child: Text(
-              'exit'.tr,
-              style: const TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) exit(0);
+    final now = DateTime.now();
+    if (_lastHomeRefreshBack != null &&
+        now.difference(_lastHomeRefreshBack!) < const Duration(seconds: 2)) {
+      SystemNavigator.pop();
+      return;
+    }
+
+    _lastHomeRefreshBack = now;
+    _refreshHomeWithIndicator();
   }
 
   @override
@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _markVisited(index);
                   },
                   children: [
-                    _buildTab(0, const HomeTab()),
+                    _buildTab(0, HomeTab(key: _homeTabKey)),
                     _buildTab(1, const MessagesTab()),
                     _buildTab(2, const FollowTab()),
                     _buildTab(3, const RecentCallsTab()),
@@ -274,6 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Expanded(
       child: InkWell(
         onTap: () {
+          _lastHomeRefreshBack = null;
           _markVisited(index);
           _pageController.jumpToPage(index);
           navProvider.updateIndex(index);
@@ -357,6 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 6),
             Text(
               title,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: isActive
                     ? context.shellTextPrimary
@@ -388,13 +390,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final socket = sl<SocketService>();
 
     socket.on('user_live', (data) {
-      print("******");
-      print(data);
-      final userId = data['user_id'];
-      // Get.bottomSheet(Text("data"));
-      final stream = LiveStreamModel.fromJson(data['data']['liveStream']);
-
-      Get.find<DiscoverController>().onUserLive(userId, stream);
+      if (data is! Map || data['data'] is! Map) return;
+      final streamData = (data['data'] as Map)['liveStream'];
+      if (streamData is! Map) return;
+      final userId = data['user_id'] ?? streamData['user_id'];
+      if (userId is String && userId.isNotEmpty) {
+        final stream = LiveStreamModel.fromJson(
+          Map<String, dynamic>.from(streamData),
+        );
+        Get.find<DiscoverController>().onUserLive(userId, stream);
+      }
       Get.find<DiscoverController>().fetchActiveLives();
     });
 

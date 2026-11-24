@@ -199,14 +199,18 @@ class RecentCallsTabState extends State<RecentCallsTab>
                       return RefreshIndicator(
                         color: MainColors.primary,
                         onRefresh: () => provider.getRecentCall(),
-                        child: ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * .7,
-                              child: const RecentCallsEmpty(),
-                            ),
-                          ],
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: const RecentCallsEmpty(),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     case PageState.error:

@@ -15,12 +15,14 @@ class HomeTabContent extends StatelessWidget {
   final String tabName;
   final bool showFilter;
   final VoidCallback? onFilterTap;
+  final GlobalKey<RefreshIndicatorState>? refreshKey;
 
   const HomeTabContent({
     super.key,
     required this.tabName,
     this.showFilter = false,
     this.onFilterTap,
+    this.refreshKey,
   });
 
   @override
@@ -29,36 +31,37 @@ class HomeTabContent extends StatelessWidget {
       children: [
         if (showFilter) _CountryFilterBar(onTap: onFilterTap),
         Expanded(
-          child: GetBuilder<DiscoverController>(
-            builder: (viewModel) {
-              final isLoading = viewModel.isTabLoading(tabName);
-              final isEmpty = viewModel.isTabEmpty(tabName);
-              final items = viewModel.dataForTab(tabName);
+          child: RefreshIndicator(
+            key: refreshKey,
+            color: const Color(0xFFB862E1),
+            onRefresh: () => Get.find<DiscoverController>().refreshTab(tabName),
+            child: GetBuilder<DiscoverController>(
+              builder: (viewModel) {
+                final isLoading = viewModel.isTabLoading(tabName);
+                final isEmpty = viewModel.isTabEmpty(tabName);
+                final items = viewModel.dataForTab(tabName);
 
-              if (isLoading && isEmpty) {
-                return const _LoadingGrid();
-              }
+                if (isLoading && isEmpty) {
+                  return const _LoadingGrid();
+                }
 
-              if (isEmpty) {
-                return RefreshIndicator(
-                  color: const Color(0xFFB862E1),
-                  onRefresh: () => viewModel.refreshTab(tabName),
-                  child: ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * .7,
-                        child: _EmptyState(tabName: tabName),
-                      ),
-                    ],
-                  ),
-                );
-              }
+                if (isEmpty) {
+                  return LayoutBuilder(
+                    builder: (context, constraints) => ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: _EmptyState(tabName: tabName),
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
-              return RefreshIndicator(
-                color: const Color(0xFFB862E1),
-                onRefresh: () => viewModel.refreshTab(tabName),
-                child: GridView.builder(
+                return GridView.builder(
                   physics: const AlwaysScrollableScrollPhysics(
                     parent: ClampingScrollPhysics(),
                   ),
@@ -72,9 +75,9 @@ class HomeTabContent extends StatelessWidget {
                   itemCount: items.length,
                   itemBuilder: (context, index) =>
                       _UserCard(user: items[index], index: index),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -294,13 +297,13 @@ class _EmptyState extends StatelessWidget {
   String get _title {
     switch (tabName) {
       case 'Live':
-        return 'No live streams';
+        return 'no_live_streams'.tr;
       case 'Online':
-        return 'No online users yet';
+        return 'no_online_users'.tr;
       case 'Country':
-        return 'No users found in this country';
+        return 'no_country_users'.tr;
       default:
-        return 'No users found';
+        return 'no_discover_users'.tr;
     }
   }
 
@@ -310,6 +313,19 @@ class _EmptyState extends StatelessWidget {
     // RefreshIndicator (see the ListView above), so "pull down to refresh"
     // is the one real way to refresh and the text just names that gesture
     // instead of duplicating it as a tappable action.
-    return AppStateView.empty(title: _title, message: 'Pull down to refresh');
+    return AppStateView.illustratedEmpty(
+      icon: tabName == 'Live'
+          ? Icons.videocam_outlined
+          : tabName == 'Country'
+          ? Icons.public
+          : Icons.people_outline_rounded,
+      iconAsset: tabName == 'Live'
+          ? 'assets/icons/empty_video.svg'
+          : tabName == 'Country'
+          ? null
+          : 'assets/icons/empty_followings.svg',
+      title: _title,
+      message: 'pull_down_to_refresh'.tr,
+    );
   }
 }

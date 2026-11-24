@@ -23,9 +23,19 @@ class InterceptorClient extends http.BaseClient {
       print('--- Request ---');
       print('URL: ${request.url}');
       print('Method: ${request.method}');
-      print('Headers: ${request.headers}');
+      final headers = request.headers.map(
+        (key, value) => MapEntry(
+          key,
+          key.toLowerCase() == 'authorization' ? '[redacted]' : value,
+        ),
+      );
+      print('Headers: $headers');
       if (request is http.Request) {
-        print('Body: ${request.body}');
+        print(
+          _isAuthRequest(request.url)
+              ? 'Body: [redacted]'
+              : 'Body: ${request.body}',
+        );
       }
       print('--------------');
     }
@@ -89,7 +99,11 @@ class InterceptorClient extends http.BaseClient {
       //print('Headers: ${response.headers}');
       print('------- body --------');
 
-      printPrettyJson(responseBody);
+      if (_isAuthRequest(response.request?.url)) {
+        print('[redacted]');
+      } else {
+        printPrettyJson(responseBody);
+      }
       // debugPrint('Body: $responseBody');
       print('---------------');
     }
@@ -105,4 +119,6 @@ class InterceptorClient extends http.BaseClient {
       reasonPhrase: response.reasonPhrase,
     );
   }
+
+  bool _isAuthRequest(Uri? url) => url?.pathSegments.contains('auth') ?? false;
 }

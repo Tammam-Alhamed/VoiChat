@@ -26,7 +26,8 @@ const Map<String, String> en = {
   "email_address": "Email address",
   "send_otp": "Send",
   "enter_valid_email_address": "Please enter a valid email address",
-  "email_not_registered_please_use_google": "This email isn't registered. Please continue with Google to sign up.",
+  "email_not_registered_please_use_google":
+      "This email isn't registered. Please continue with Google to sign up.",
 
   "enter_verification_code": "Enter Verification Code",
   "code_sent_via": "Code was sent to @contact via @method",
@@ -54,6 +55,23 @@ const Map<String, String> en = {
   "personal_info": "Personal Info",
   "phone_number": "Phone Number",
   "other": "Other",
+  "report_reason_spam": "Spam",
+  "report_reason_harassment_bullying": "Harassment or Bullying",
+  "report_reason_sexual_content_nudity": "Sexual Content or Nudity",
+  "report_reason_child_safety": "Child Safety",
+  "report_reason_violence_threats": "Violence or Threats",
+  "report_reason_scams_fraud": "Scams and Fraud",
+  "report_reason_fake_profile_impersonation": "Fake Profile or Impersonation",
+  "report_reason_privacy_violation": "Privacy Violation",
+  "report_reason_dangerous_illegal_activities": "Dangerous or Illegal Activities",
+  "report_reason_hate_speech_discrimination": "Hate Speech or Discrimination",
+  "report_reason_inappropriate_content": "Inappropriate Content",
+  "report_reason_other": "Other",
+  "report_user": "Report",
+  "report_main_reason": "Main Report Reason:",
+  "report_additional_details": "Additional Details (Optional):",
+  "report_details_hint": "Write details to help the admin review the account...",
+  "report_submit": "Submit Report",
   "join_an_agency": "Join an agency",
   "already_in_agency": "You Are already in Agency",
   "linked_device": "Linked device",
@@ -109,6 +127,13 @@ const Map<String, String> en = {
   "creator_hub": "Creator Hub",
   "performance": "Performance",
   "payout": "Payout",
+  "payout_available_balance": "Available Balance",
+  "payout_amount": "Amount",
+  "payout_bank_transfer": "Bank Transfer",
+  "payout_agent_payout": "Agent Payout",
+  "payout_withdraw": "Withdraw",
+  "payout_invalid_amount": "Enter a valid withdrawal amount",
+  "payout_amount_exceeds_balance": "Amount exceeds available balance",
   "call_rating": "Call Rating",
   "partner_hub": "Partner Hub",
   "manage_creators": "Manage Creators",
@@ -117,8 +142,37 @@ const Map<String, String> en = {
   "notifications": "Notifications",
   "privacy": "Privacy",
   "display": "Display",
+  "display_light": "Light",
+  "display_dark": "Dark",
+  "display_system": "System",
+  "display_system_unavailable": "System theme isn't available yet — pick Light or Dark",
+  "display_ok": "OK",
   "support": "Support",
+  "contact_support": "Contact Support",
+  "contact_support_description": "Get help and assistance from our team.",
+  "message_support_hint": "Message Support...",
+  "help_and_support": "Help & Support",
+  "support_info": "Support Info",
+  "help_faq": "Help & FAQ",
+  "voichat": "VoiChat",
+  "faq_search_hint_detail":
+      "Type a keyword to filter questions. Tap any question to open its answer.",
+  "clear": "Clear",
+  "faq_introduction": "Introduction",
+  "faq_intro_body":
+      "Welcome to VoiChat! Find answers to common questions about your account, profile, chats, calls, live streams, Coins, gifts, memberships, verification, privacy, and account settings.",
+  "faq_intro_support":
+      "If you need further assistance, contact the VoiChat Support Team through Support Chat in the app.",
+  "faq_footer_support":
+      "Need assistance? Contact VoiChat Support through Support Chat in the app.",
+  "faq_footer_copyright": "© VoiChat. All rights reserved.",
+  "help_faq_description": "Find answers to common questions about VoiChat.",
   "support_chat": "Support Chat",
+  "support_chat_description":
+      "Contact our support team for further assistance.",
+  "faq_search_hint": "Search questions and answers…",
+  "faq_no_results": "No matching questions found.",
+  "faq_load_error": "Could not load the FAQ.",
   "logins": "Logins",
   "logout": "Logout",
   "app_footer_version":
@@ -146,12 +200,18 @@ const Map<String, String> en = {
   "confirm_block": "Confirm Block",
   "unblock_success_message": "You can now communicate with @name again.",
 
+  "notifications_subtitle": "All your latest updates appear here",
+
   // ─── Notification settings ───────────────────────────────────────────────
   "live_stream": "Live Stream",
   "live_notification": "Live Notification",
   "live_notification_desc": "Get notified when your Friends are Live",
   "in_app_sound": "In-App Sound",
   "in_app_vibrations": "In-App Vibrations",
+
+  // ─── Live gift banner ───────────────────────────────────────────────────
+  "live_gift_sent": "Sent @gift",
+  "live_gift_combo": "Combo",
 
   // ─── Home shell (bottom nav + exit confirmation) ────────────────────────
   "home": "Home",
@@ -162,6 +222,26 @@ const Map<String, String> en = {
   "exit_app_confirm": "Are you sure you want to exit?",
   "exit": "Exit",
   "access_denied": "Access Denied",
+
+  // ─── Centered content empty states ──────────────────────────────────────
+  "no_notifications_yet": "No notifications yet",
+  "no_messages_yet": "No messages yet",
+  "no_recent_calls": "No recent calls yet",
+  "no_live_streams": "No live streams",
+  "no_online_users": "No online users yet",
+  "no_country_users": "No users found in this country",
+  "no_discover_users": "No users found",
+  "start_a_conversation": "Start a conversation",
+  "pull_down_to_refresh": "Pull down to refresh",
+  "no_followings_yet": "No followings yet",
+  "no_results_found": "No results found",
+  "no_photos_yet": "No Photos Yet",
+  "photos_will_appear_here": "Photos you share will appear here.",
+  "no_videos_yet": "No Videos Yet",
+  "videos_will_appear_here": "When you post videos, they will appear here",
+
+  "user_photos_will_appear_here": "Photos shared by this user will appear here.",
+  "user_videos_will_appear_here": "Videos posted by this user will appear here.",
 
   // ─── Shared error / empty state (AppStateView) ──────────────────────────
   "something_went_wrong": "Something went wrong",

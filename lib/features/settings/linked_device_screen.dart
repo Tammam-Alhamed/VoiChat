@@ -12,11 +12,13 @@ class LinkedDeviceScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.shellBackground,
       appBar: AppBar(
+        leadingWidth: 44,
+        titleSpacing: 4,
         backgroundColor: context.shellBackground,
         elevation: 0,
         foregroundColor: context.shellTextPrimary,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
             Navigator.pop(context);
           },

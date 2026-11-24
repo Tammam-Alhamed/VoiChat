@@ -204,53 +204,56 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
               // 1. الشريط العلوي (App Bar)
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            if (await _onWillPop()) {
-                              if (mounted) Navigator.pop(context);
-                            }
-                          },
-                          child: Icon(
-                            Icons.arrow_back_ios_new,
-                            color: context.shellTextPrimary,
-                            size: 22,
+                padding: const EdgeInsetsDirectional.only(end: 16),
+                child: SizedBox(
+                  height: 56,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 44,
+                            child: IconButton(
+                              onPressed: () async {
+                                if (await _onWillPop()) {
+                                  if (mounted) Navigator.pop(this.context);
+                                }
+                              },
+                              icon: Icon(
+                                Icons.arrow_back_ios_new,
+                                color: context.shellTextPrimary,
+                                size: 22,
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Edit Profile',
-                          style: TextStyle(
-                            color: context.shellTextPrimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                          const SizedBox(width: 4),
+                          Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                              color: context.shellTextPrimary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    // زر الحفظ
-                    InkWell(
-                      onTap: (_hasChanges && !_isLoading)
-                          ? _saveProfileTextData
-                          : null,
-                      child: Icon(
-                        Icons.check,
-                        color: _hasChanges
-                            ? const Color(0xFF6044FF)
-                            : Colors.grey,
-                        size: 28,
+                        ],
                       ),
-                    ),
-                  ],
+
+                      // زر الحفظ
+                      InkWell(
+                        onTap: (_hasChanges && !_isLoading)
+                            ? _saveProfileTextData
+                            : null,
+                        child: Icon(
+                          Icons.check,
+                          color: _hasChanges
+                              ? const Color(0xFF6044FF)
+                              : Colors.grey,
+                          size: 28,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 

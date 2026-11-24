@@ -6,6 +6,7 @@ import 'package:shoeebapk/core/enums/page_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../core/widgets/app_state_view.dart';
+import '../../core/widgets/settings_app_bar.dart';
 import '../../core/themes/app_dark_colors.dart';
 import '../../core/helpers/avatar_helper.dart';
 import '../settings/member_ship/member_ship_screen.dart';
@@ -66,10 +67,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.shellBackground,
+      appBar: SettingsAppBar(title: 'notifications'.tr),
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildSubtitle(),
             Expanded(child: _buildBodyContent()),
           ],
         ),
@@ -77,48 +79,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  // Header Section (Unchanged)
-  Widget _buildHeader() {
+  Widget _buildSubtitle() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2.0),
-            child: GestureDetector(
-              onTap: () => Get.back(),
-              child: Icon(
-                Icons.arrow_back,
-                color: context.shellTextPrimary,
-                size: 24,
-              ),
-            ),
+      padding: const EdgeInsets.fromLTRB(48, 0, 16, 20),
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: Text(
+          'notifications_subtitle'.tr,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade600,
           ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Notifications",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: context.shellTextPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "All your latest updates appear here",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -139,18 +112,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         if (provider.pageState == PageState.empty) {
           return RefreshIndicator(
             onRefresh: () => provider.fetchNotifications(),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * .7,
-                  child: AppStateView.empty(
-                    icon: Icons.notifications_off_outlined,
-                    title: "No notifications yet",
-                    message: "Pull down to refresh",
+            child: LayoutBuilder(
+              builder: (context, constraints) => ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: AppStateView.illustratedEmpty(
+                      icon: Icons.notifications_none_outlined,
+                      iconAsset: 'assets/icons/empty_notification.svg',
+                      title: 'no_notifications_yet'.tr,
+                      message: 'pull_down_to_refresh'.tr,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }

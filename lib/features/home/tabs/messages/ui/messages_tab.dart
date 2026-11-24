@@ -6,6 +6,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../../../core/themes/app_dark_colors.dart';
 import '../../../../../core/helpers/avatar_helper.dart';
 import '../../../../../core/widgets/app_search_field.dart';
+import '../../../../../core/widgets/app_state_view.dart';
 import '../../../../chat/chat_screen.dart';
 import '../../../../profile/profile_screen.dart';
 import '../../../presentation/controllers/navigation_controller.dart';
@@ -382,6 +383,31 @@ class MessagesTabState extends State<MessagesTab>
                               ),
                             )
                             .toList();
+
+                  if (filtered.isEmpty && searchQuery.isEmpty) {
+                    return RefreshIndicator(
+                      color: const Color(0xFF7B13E2),
+                      onRefresh: provider.refresh,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) => ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: constraints.maxHeight,
+                              ),
+                              child: AppStateView.illustratedEmpty(
+                                icon: Icons.forum_outlined,
+                                iconAsset: 'assets/icons/empty_messages.svg',
+                                title: 'no_messages_yet'.tr,
+                                message: 'start_a_conversation'.tr,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
 
                   if (filtered.isEmpty) {
                     // No refresh button — pull down to refresh instead, same

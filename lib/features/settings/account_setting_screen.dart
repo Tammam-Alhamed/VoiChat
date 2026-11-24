@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:shoeebapk/core/extentions.dart';
 import 'package:shoeebapk/core/themes/app_dark_colors.dart';
 import 'package:shoeebapk/features/settings/state/account_setting_provider.dart';
 
 import '../../core/helpers/toast_helper.dart';
 import '../../core/localization/localization_service.dart';
+import '../../core/widgets/settings_app_bar.dart';
+import '../../core/widgets/settings_widgets.dart';
 import 'linked_device_screen.dart';
 import 'widget/contact_verify_sheet.dart';
 
@@ -26,64 +27,41 @@ class AccountSettingScreen extends StatelessWidget {
   Widget _buildSessionScope(BuildContext context) {
     return Scaffold(
       backgroundColor: context.shellBackground,
-      appBar: AppBar(
-        backgroundColor: context.shellBackground,
-        elevation: 0,
-        foregroundColor: context.shellTextPrimary,
-        leading: Center(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () {
-              Get.back();
-            },
-            child: const Icon(Icons.arrow_back_ios_new),
-          ),
-        ),
-        title: Text(
-          "account".tr,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-        ),
-      ),
+      appBar: SettingsAppBar(title: "account".tr),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: SettingsMetrics.pagePadding,
+        ),
         children: [
           const SizedBox(height: 10),
 
           /// Personal Info
-          Text(
-            "personal_info".tr,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF7A7A7A)),
-          ),
-          const SizedBox(height: 10),
+          SettingsSectionHeader(title: "personal_info".tr),
+          const SizedBox(height: 6),
 
           // --- Phone Number Section ---
           Get.find<SessionController>().session!.user!.phone != null
-              ? ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.phone),
-                  title: Text("phone_number".tr),
-                  subtitle: Text(
-                    Get.find<SessionController>().session!.user!.phone!,
-                  ).fs12,
+              ? SettingsRow(
+                  leadingIcon: Icons.phone,
+                  title: "phone_number".tr,
+                  subtitle:
+                      Get.find<SessionController>().session!.user!.phone!,
                   onTap: () => showUpdateFieldSheet(context, isPhone: true),
                 )
-              : ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.phone),
-                  title: Text("phone_number".tr),
-                  trailing: const Icon(Icons.add),
+              : SettingsRow(
+                  leadingIcon: Icons.phone,
+                  title: "phone_number".tr,
+                  trailing: const Icon(Icons.add, size: 24),
                   onTap: () => showUpdateFieldSheet(context, isPhone: true),
                 ),
 
           // --- Email/Google Section ---
           Get.find<SessionController>().session!.user!.email != null
-              ? ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.mail_outline),
-                  title: const Text("Google"), // brand name — not translated
-                  subtitle: Text(
-                    Get.find<SessionController>().session!.user!.email!,
-                  ),
+              ? SettingsRow(
+                  leadingIcon: Icons.mail_outline,
+                  title: "Google", // brand name — not translated
+                  subtitle:
+                      Get.find<SessionController>().session!.user!.email!,
                   // The account's email can't be changed.
                   trailing: const Icon(
                     Icons.lock_outline,
@@ -94,26 +72,24 @@ class AccountSettingScreen extends StatelessWidget {
                     message: "Your account's email can't be changed",
                   ),
                 )
-              : ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.mail_outline),
-                  title: const Text("Google"), // brand name — not translated
-                  trailing: const Icon(Icons.add),
+              : SettingsRow(
+                  leadingIcon: Icons.mail_outline,
+                  title: "Google", // brand name — not translated
+                  trailing: const Icon(Icons.add, size: 24),
                   onTap: () => showUpdateFieldSheet(context, isPhone: false),
                 ),
           const SizedBox(height: 20),
 
           /// Other
-          Text(
-            "other".tr,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF7A7A7A)),
-          ),
-          const SizedBox(height: 10),
+          SettingsSectionHeader(title: "other".tr),
+          const SizedBox(height: 6),
 
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text("join_an_agency".tr),
-            trailing: const Icon(Icons.chevron_right),
+          SettingsRow(
+            title: "join_an_agency".tr,
+            trailing: const SettingsChevron(),
+            titleStyle: const TextStyle(
+              fontSize: 16.0,
+            ),
             onTap: () {
               if (Get.find<SessionController>()
                       .session!
@@ -126,31 +102,33 @@ class AccountSettingScreen extends StatelessWidget {
               showJoinAgencySheet(context);
             },
           ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              "${"linked_device".tr} "
-              "(${Get.find<SessionController>().session!.userDevices.length})",
+          SettingsRow(
+            title:
+                "${"linked_device".tr} "
+                "(${Get.find<SessionController>().session!.userDevices.length})",
+            subtitle: "see_all_devices_desc".tr,
+            trailing: const SettingsChevron(),
+            titleStyle: const TextStyle(
+              fontSize: 16.0,
             ),
-            subtitle: Text(
-              "see_all_devices_desc".tr,
-              style: const TextStyle(fontSize: 12),
-            ),
-            trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Get.to(const LinkedDeviceScreen());
             },
           ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text("language_settings".tr),
-            trailing: const Icon(Icons.chevron_right),
+          SettingsRow(
+            title: "language_settings".tr,
+            trailing: const SettingsChevron(),
+            titleStyle: const TextStyle(
+              fontSize: 16.0,
+            ),
             onTap: () => showLanguageDialog(context),
           ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text("delete_account".tr),
-            trailing: const Icon(Icons.chevron_right),
+          SettingsRow(
+            title: "delete_account".tr,
+            trailing: const SettingsChevron(),
+            titleStyle: const TextStyle(
+              fontSize: 16.0,
+            ),
             onTap: () {
               showDeleteAccountSheet(context);
             },
@@ -353,7 +331,10 @@ class AccountSettingScreen extends StatelessWidget {
               topRight: Radius.circular(15),
             ),
           ),
-          child: Column(
+          child: SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
@@ -481,6 +462,8 @@ class AccountSettingScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
             ],
+              ),
+            ),
           ),
         );
       },

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:shoeebapk/core/themes/app_dark_colors.dart';
-import 'package:shoeebapk/features/settings/chat_with_support.dart';
 import 'package:shoeebapk/features/settings/notifications_settings_screen.dart';
 import 'package:shoeebapk/features/settings/payout/payout_screen.dart';
 
+import '../../core/widgets/settings_app_bar.dart';
+import '../../core/widgets/settings_widgets.dart';
 import 'account_setting_screen.dart';
 import 'creators/creators_screen.dart';
 import 'edit_profile_screen.dart';
@@ -14,6 +15,7 @@ import 'member_ship/member_ship_screen.dart';
 import 'performance_screen.dart';
 import 'privacy_screen.dart';
 import 'rate/call_ratings.dart';
+import 'support_screen.dart';
 import 'recharge/recharge_screen.dart';
 import 'theme_screen.dart';
 import 'verify/verify_screen.dart';
@@ -193,9 +195,9 @@ class _AccountCenterScreenState extends State<AccountCenterScreen>
       _buildSectionHeader('support'.tr),
       _buildSettingsItem(
         icon: Icons.headset_mic_outlined,
-        title: 'support_chat'.tr,
+        title: 'help_and_support'.tr,
         onTap: () => Get.to(
-          SupportChatScreen(),
+          const SupportScreen(),
         ),
       ),
 
@@ -270,48 +272,17 @@ class _AccountCenterScreenState extends State<AccountCenterScreen>
 
     return Scaffold(
       backgroundColor: context.shellBackground,
+      appBar: SettingsAppBar(title: 'account_center'.tr),
       body: SafeArea(
         child: Column(
           children: [
-            // 1. Static Top App Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: () => Navigator.maybePop(context),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.arrow_back_ios_new,
-                        color: context.shellTextPrimary,
-                        size: 22,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'account_center'.tr,
-                    style: TextStyle(
-                      color: context.shellTextPrimary,
-                      fontSize: 22,
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.02,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 2. Animated Scrollable Settings List
+            // Animated Scrollable Settings List
             Expanded(
               child: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(), // Premium bounce effect
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
+                    horizontal: SettingsMetrics.pagePadding,
                     vertical: 16,
                   ),
                   child: Column(
@@ -377,7 +348,7 @@ class _AccountCenterScreenState extends State<AccountCenterScreen>
                   style: TextStyle(
                     color: titleColor ?? context.shellTextPrimary,
                     fontSize: 18,
-                    fontFamily: 'Open Sans',
+                    fontFamily: "ProximaNova",
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.02,
                   ),

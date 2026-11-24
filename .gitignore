@@ -4,6 +4,7 @@
 .flutter-plugins-dependencies
 .packages
 build/
+/graphify-out/
 
 # Android local build and machine configuration
 /android/.gradle/
@@ -11,6 +12,7 @@ build/
 /android/local.properties
 /android/build/
 /android/app/build/
+/android/app/google-services 1.json
 /android/hs_err_pid*.log
 /android/replay_pid*.log
 *.log

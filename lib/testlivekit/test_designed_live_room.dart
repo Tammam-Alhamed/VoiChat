@@ -1525,11 +1525,15 @@ class _LiveStreamingScreenState extends State<LiveStreamingScreen>
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SessionController>(
-      builder: (_) => _buildSessionScope(context),
+      builder: (sessionController) =>
+          _buildSessionScope(context, sessionController),
     );
   }
 
-  Widget _buildSessionScope(BuildContext context) {
+  Widget _buildSessionScope(
+    BuildContext context,
+    SessionController sessionController,
+  ) {
     if (_streamEnded) {
       // Broadcast is over — no live UI left to protect with an exit
       // confirm sheet, so allow normal back navigation.
@@ -1589,13 +1593,7 @@ class _LiveStreamingScreenState extends State<LiveStreamingScreen>
                     alignment: Alignment.centerLeft,
                     child: GiftBannerQueue(
                       key: _giftBannerQueueKey,
-                      currentUserId:
-                          context
-                              .watch<SessionController>()
-                              .session
-                              ?.user
-                              ?.id ??
-                          '',
+                      currentUserId: sessionController.session?.user?.id ?? '',
                       onComboTap: _onComboResend,
                     ),
                   ),
@@ -2709,8 +2707,8 @@ class _LiveStreamingScreenState extends State<LiveStreamingScreen>
   // ==========================================
   Widget _buildChatInputField() {
     final field = Container(
-      height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      constraints: const BoxConstraints(minHeight: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(25),
@@ -2725,6 +2723,10 @@ class _LiveStreamingScreenState extends State<LiveStreamingScreen>
           Expanded(
             child: TextField(
               controller: _chatController,
+              keyboardType: TextInputType.multiline,
+              textInputAction: TextInputAction.newline,
+              minLines: 1,
+              maxLines: 4,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: "Type...",
@@ -2734,98 +2736,101 @@ class _LiveStreamingScreenState extends State<LiveStreamingScreen>
                 ),
                 border: InputBorder.none,
               ),
-              onSubmitted: (_) => _sendComment(),
             ),
           ),
         ],
       ),
     );
 
-    return widget.isHost
+    return widget.isHost && _chatController.text.isEmpty
         ? SizedBox(width: context.width * 0.70, child: field)
         : Expanded(child: field);
   }
 
   Widget _buildBottomInputBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          // Host mic/camera toggles now live in the labeled toolbar below
-          // (_buildLiveToolbar) as Mute/Switch — kept out of this row so it
-          // stays a single, uncluttered "type a message" bar.
+    return AnimatedBuilder(
+      animation: _chatController,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            // Host mic/camera toggles now live in the labeled toolbar below
+            // (_buildLiveToolbar) as Mute/Switch — kept out of this row so it
+            // stays a single, uncluttered "type a message" bar.
 
-          // Chat input. Host has no trailing icons anymore (share/gift/send
-          // are viewer-only), so it goes back to the fixed 70%-of-screen
-          // width you originally set. Viewer keeps it Expanded so it still
-          // yields space correctly to the 3 icons that follow it.
-          _buildChatInputField(),
-          if (!widget.isHost) const SizedBox(width: 8),
+            // Grow the input while composing; keep the send button available
+            // for both host and viewer because Enter now inserts a newline.
+            _buildChatInputField(),
+            if (!widget.isHost || _chatController.text.trim().isNotEmpty)
+              const SizedBox(width: 8),
 
-          // Share, gift, and camera/send icons — viewers only. Host's own
-          // broadcast screen keeps just the input bar (mic/camera controls
-          // already live in the labeled toolbar below).
-          if (!widget.isHost) ...[
-            Container(
-              width: 40,
-              height: 40,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.reply_all_rounded,
-                color: Colors.white.withOpacity(0.8),
-                size: 28,
-              ),
-            ),
-            const SizedBox(width: 8),
-
-            // Gift icon — opens the gift sheet, and on selection emits it.
-            GestureDetector(
-              onTap: () async {
-                final gift = await showGiftBottomSheet(context);
-                if (gift != null) {
-                  await _sendGift(gift);
-                }
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
-                  shape: BoxShape.circle,
+            // Viewer actions move out of the way while a comment is drafted.
+            if (!widget.isHost) ...[
+              if (_chatController.text.isEmpty) ...[
+                Container(
+                  width: 40,
+                  height: 40,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.reply_all_rounded,
+                    color: Colors.white.withOpacity(0.8),
+                    size: 28,
+                  ),
                 ),
-                child: Image.asset(AssetsManager.giftSm, width: 30, height: 30),
-              ),
-            ),
-            const SizedBox(width: 8),
+                const SizedBox(width: 8),
 
-            Container(
-              width: 40,
-              height: 40,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: const Icon(
-                  Icons.send,
-                  color: Colors.deepPurpleAccent,
-                  size: 20,
+                // Gift icon — opens the gift sheet, and on selection emits it.
+                GestureDetector(
+                  onTap: () async {
+                    final gift = await showGiftBottomSheet(context);
+                    if (gift != null) {
+                      await _sendGift(gift);
+                    }
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.4),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.asset(
+                      AssetsManager.giftSm,
+                      width: 30,
+                      height: 30,
+                    ),
+                  ),
                 ),
-                onPressed: _sendComment,
-              ),
-            ),
+                const SizedBox(width: 8),
+              ],
+            ],
+            if (!widget.isHost || _chatController.text.trim().isNotEmpty)
+              _buildLiveSendButton(),
           ],
-        ],
+        ),
       ),
     );
   }
+
+  Widget _buildLiveSendButton() => Container(
+    width: 40,
+    height: 40,
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.4),
+      shape: BoxShape.circle,
+    ),
+    child: IconButton(
+      padding: EdgeInsets.zero,
+      icon: const Icon(Icons.send, color: Colors.deepPurpleAccent, size: 20),
+      onPressed: _sendComment,
+    ),
+  );
 
   // ==========================================
   // Live Toolbar — Switch/Mute/Premium/Chat/Start 1:1/Call off/Filter

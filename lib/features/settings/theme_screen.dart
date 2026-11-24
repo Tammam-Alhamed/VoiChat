@@ -63,10 +63,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                "System theme isn't available yet — pick Light or Dark",
+              Text(
+                'display_system_unavailable'.tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
@@ -84,9 +84,9 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
-                    "OK",
-                    style: TextStyle(
+                  child: Text(
+                    'display_ok'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -109,25 +109,26 @@ class _ThemeScreenState extends State<ThemeScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      InkWell(
-                        onTap: () async {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: context.shellTextPrimary,
-                          size: 22,
+                      SizedBox(
+                        width: 44,
+                        child: IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: context.shellTextPrimary,
+                            size: 22,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 4),
                       Text(
-                        "Display",
+                        'display'.tr,
                         style: TextStyle(
                           color: context.shellTextPrimary,
                           fontSize: 18,
@@ -140,98 +141,78 @@ class _ThemeScreenState extends State<ThemeScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              padding: const EdgeInsets.fromLTRB(20, 36, 20, 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 30),
-
-                  /// Theme preview cards
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(0),
-                        child: SvgPicture.asset(AssetsManager.light, width: 40),
-                      ),
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(1),
-                        child: SvgPicture.asset(AssetsManager.dark, width: 40),
-                      ),
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(2),
-                        child: SvgPicture.asset(
-                          AssetsManager.system,
-                          width: 40,
-                        ),
-                      ),
-                    ],
+                  Expanded(
+                    child: _buildThemeOption(
+                      index: 0,
+                      asset: AssetsManager.light,
+                      label: 'display_light'.tr,
+                    ),
                   ),
-
-                  const SizedBox(height: 30),
-
-                  /// Labels
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(0),
-                        child: const Text(
-                          "Light",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(1),
-                        child: const Text(
-                          "Dark",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(2),
-                        child: const Text(
-                          "System",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildThemeOption(
+                      index: 1,
+                      asset: AssetsManager.dark,
+                      label: 'display_dark'.tr,
+                    ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  /// Selectors
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(0),
-                        child: ThemeSelector(active: _selectedThemeIndex == 0),
-                      ),
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(1),
-                        child: ThemeSelector(active: _selectedThemeIndex == 1),
-                      ),
-                      GestureDetector(
-                        onTap: () => _handleThemeSelection(2),
-                        child: ThemeSelector(active: _selectedThemeIndex == 2),
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildThemeOption(
+                      index: 2,
+                      asset: AssetsManager.system,
+                      label: 'display_system'.tr,
+                    ),
                   ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption({
+    required int index,
+    required String asset,
+    required String label,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => _handleThemeSelection(index),
+      child: Column(
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 75),
+            child: AspectRatio(
+              aspectRatio: 75 / 120,
+              child: SvgPicture.asset(asset, fit: BoxFit.contain),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 44,
+            child: Center(
+              child: Text(
+                label,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: context.shellTextPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ThemeSelector(active: _selectedThemeIndex == index),
+        ],
       ),
     );
   }

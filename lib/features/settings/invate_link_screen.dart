@@ -106,6 +106,8 @@ class _InviteLinkScreenState extends State<InviteLinkScreen>
         AppDarkColors.background,
       ),
       appBar: AppBar(
+        leadingWidth: 44,
+        titleSpacing: 4,
         elevation: 0,
         backgroundColor: Colors.transparent,
 

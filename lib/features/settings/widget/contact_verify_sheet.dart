@@ -145,9 +145,12 @@ class _ContactVerifySheetState extends State<ContactVerifySheet> {
           topRight: Radius.circular(15),
         ),
       ),
-      child: Form(
-        key: _formKey,
-        child: Column(
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -261,6 +264,8 @@ class _ContactVerifySheetState extends State<ContactVerifySheet> {
             ),
             const SizedBox(height: 10),
           ],
+            ),
+          ),
         ),
       ),
     );

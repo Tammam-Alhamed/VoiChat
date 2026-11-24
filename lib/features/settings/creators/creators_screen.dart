@@ -40,6 +40,8 @@ class _ManageCreatorsScreenState extends State<ManageCreatorsScreen> {
     return Scaffold(
       backgroundColor: context.shellBackground,
       appBar: AppBar(
+        leadingWidth: 44,
+        titleSpacing: 4,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(

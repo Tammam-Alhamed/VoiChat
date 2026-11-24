@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../auth/presentation/screens/auth_screen.dart';
@@ -19,12 +20,12 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late Future<void> _animationComplete;
 
   @override
   void initState() {
     super.initState();
 
-    // Purely cosmetic branding animation — it never gates navigation below.
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -40,7 +41,9 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _controller.forward();
+    _animationComplete = _controller.forward().orCancel.catchError(
+      (TickerCanceled _) {},
+    );
 
     // Defer to after the first frame instead of calling _bootstrap()
     // directly. _bootstrap() is async, but Dart runs its synchronous
@@ -60,14 +63,15 @@ class _SplashScreenState extends State<SplashScreen>
     final session = Get.find<SessionController>();
 
     if (!session.hasStoredLogin) {
-      Get.offAll(() => const AuthScreen());
+      await _openAfterSplash(() => const AuthScreen());
       return;
     }
 
     // Fast path: a local snapshot exists (returning user), so open Home
     // right away and revalidate with the server in the background.
     if (session.hydrateFromCache()) {
-      Get.offAll(() => const HomeScreen());
+      await _openAfterSplash(() => const HomeScreen());
+      if (!mounted) return;
       unawaited(session.refreshSessionInBackground());
       return;
     }
@@ -78,8 +82,15 @@ class _SplashScreenState extends State<SplashScreen>
     final isAllowed = await session.verifySessionOrBlock();
     if (!mounted || !isAllowed) return;
 
-    Get.offAll(() => const HomeScreen());
+    await _openAfterSplash(() => const HomeScreen());
+    if (!mounted) return;
     unawaited(session.syncFcmToken());
+  }
+
+  Future<void> _openAfterSplash(Widget Function() page) async {
+    await _animationComplete;
+    if (!mounted) return;
+    Get.offAll(page, transition: Transition.noTransition);
   }
 
   @override

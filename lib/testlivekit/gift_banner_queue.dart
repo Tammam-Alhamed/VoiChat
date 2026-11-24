@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../core/helpers/avatar_helper.dart';
 
 /// One "someone sent a gift" event, as parsed off the `live_gift_received`
@@ -35,17 +36,22 @@ class _GiftSlot {
   bool visible; // flips true one frame after creation to trigger the
   // entrance slide/fade instead of popping in already-settled.
   bool fadingOut;
-  bool bump; // brief scale punch on the gift icon/count when combo ticks up
   double comboRemainingFraction; // 1.0 -> 0.0 over the 5s combo window
   Timer? lifetimeTimer;
   Timer? comboRingTimer;
 
-  _GiftSlot(this.event)
-    : combo = 1,
-      visible = false,
+  _GiftSlot(this.event, {this.combo = 1})
+    : visible = false,
       fadingOut = false,
-      bump = false,
       comboRemainingFraction = 1.0;
+}
+
+class _QueuedGift {
+  final GiftBannerEvent event;
+  int combo = 1;
+  DateTime lastReceivedAt;
+
+  _QueuedGift(this.event, this.lastReceivedAt);
 }
 
 /// Manages the stacked "X sent a gift x3" banners shown to everyone in the
@@ -77,14 +83,16 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
   static const _ringTick = Duration(milliseconds: 100);
 
   final List<_GiftSlot> _active = [];
-  final List<GiftBannerEvent> _queue = [];
+  final List<_QueuedGift> _queue = [];
 
   /// Call this from the `live_gift_received` socket handler for every gift
   /// event — handles combo-matching, activating a free slot, or queueing.
   void enqueueGift(GiftBannerEvent event) {
+    final receivedAt = DateTime.now();
     final existingIndex = _active.indexWhere(
       (s) =>
           !s.fadingOut &&
+          event.senderId.isNotEmpty &&
           s.event.senderId == event.senderId &&
           s.event.matchKey == event.matchKey,
     );
@@ -95,14 +103,27 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
     }
 
     if (_active.length < _maxActive) {
-      _activateSlot(event);
+      _activateSlot(_QueuedGift(event, receivedAt));
     } else {
-      _queue.add(event);
+      final queuedIndex = _queue.lastIndexWhere(
+        (queued) =>
+            event.senderId.isNotEmpty &&
+            queued.event.senderId == event.senderId &&
+            queued.event.matchKey == event.matchKey &&
+            receivedAt.difference(queued.lastReceivedAt) < _lifetime,
+      );
+      if (queuedIndex == -1) {
+        _queue.add(_QueuedGift(event, receivedAt));
+      } else {
+        _queue[queuedIndex]
+          ..combo += 1
+          ..lastReceivedAt = receivedAt;
+      }
     }
   }
 
-  void _activateSlot(GiftBannerEvent event) {
-    final slot = _GiftSlot(event);
+  void _activateSlot(_QueuedGift queued) {
+    final slot = _GiftSlot(queued.event, combo: queued.combo);
     setState(() => _active.add(slot));
 
     // Start off-screen/invisible, then flip to visible a frame later so
@@ -113,21 +134,19 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
     });
 
     _armLifetime(slot);
-    if (event.senderId == widget.currentUserId) _armComboRing(slot);
+    if (_isMine(slot)) _armComboRing(slot);
   }
 
   void _bumpCombo(_GiftSlot slot) {
-    setState(() {
-      slot.combo += 1;
-      slot.bump = true;
-    });
-    Timer(const Duration(milliseconds: 220), () {
-      if (mounted) setState(() => slot.bump = false);
-    });
+    setState(() => slot.combo += 1);
 
     _armLifetime(slot);
-    if (slot.event.senderId == widget.currentUserId) _armComboRing(slot);
+    if (_isMine(slot)) _armComboRing(slot);
   }
+
+  bool _isMine(_GiftSlot slot) =>
+      widget.currentUserId.isNotEmpty &&
+      slot.event.senderId == widget.currentUserId;
 
   void _armLifetime(_GiftSlot slot) {
     slot.lifetimeTimer?.cancel();
@@ -138,7 +157,7 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
   // every combo hit, per spec ("يُعاد احتساب الـ5 ثوانٍ بعد كل ضغطة").
   void _armComboRing(_GiftSlot slot) {
     slot.comboRingTimer?.cancel();
-    slot.comboRemainingFraction = 1.0;
+    setState(() => slot.comboRemainingFraction = 1.0);
 
     final totalTicks = _lifetime.inMilliseconds ~/ _ringTick.inMilliseconds;
     var ticksLeft = totalTicks;
@@ -147,6 +166,9 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
       ticksLeft -= 1;
       if (!mounted || slot.fadingOut || ticksLeft <= 0) {
         timer.cancel();
+        if (mounted && !slot.fadingOut) {
+          setState(() => slot.comboRemainingFraction = 0.0);
+        }
         return;
       }
       setState(() => slot.comboRemainingFraction = ticksLeft / totalTicks);
@@ -170,6 +192,14 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
   }
 
   void _onComboTap(_GiftSlot slot) {
+    if (!_isMine(slot) ||
+        slot.fadingOut ||
+        slot.comboRemainingFraction <= 0 ||
+        widget.onComboTap == null) {
+      return;
+    }
+    _armLifetime(slot);
+    _armComboRing(slot);
     widget.onComboTap?.call(slot.event);
   }
 
@@ -197,12 +227,11 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
   }
 
   Widget _buildSlot(_GiftSlot slot) {
-    final isMine = slot.event.senderId == widget.currentUserId;
+    final isMine = _isMine(slot);
 
     return Padding(
-      // Reserve headroom above the pill for the Combo button, which sits
-      // "فوق الهدية المرسلة مباشرة" (directly above the sent gift).
-      padding: EdgeInsets.only(top: isMine ? 40 : 0, bottom: 10),
+      key: ObjectKey(slot),
+      padding: const EdgeInsets.only(bottom: 10),
       child: AnimatedSlide(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeOutCubic,
@@ -211,12 +240,16 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
           duration: Duration(milliseconds: slot.fadingOut ? 350 : 200),
           opacity: slot.fadingOut ? 0.0 : (slot.visible ? 1.0 : 0.0),
           child: Stack(
-            clipBehavior: Clip.none,
             children: [
-              _buildPill(slot),
-              if (isMine && !slot.fadingOut)
+              // Keep the button within this slot's bounds so its full circle
+              // remains tappable, while it still overlaps the gift banner.
+              Padding(
+                padding: EdgeInsets.only(top: isMine ? 70 : 0),
+                child: _buildPill(slot),
+              ),
+              if (isMine)
                 Positioned(
-                  top: -40,
+                  top: 0,
                   left: 8,
                   child: _ComboButton(
                     fraction: slot.comboRemainingFraction,
@@ -254,62 +287,67 @@ class GiftBannerQueueState extends State<GiftBannerQueue> {
             backgroundImage: AvatarHelper.resolve(event.senderImage),
           ),
           const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                event.senderName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  event.senderName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                'Send a ${event.giftName}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white70, fontSize: 11),
-              ),
-            ],
+                Text(
+                  'live_gift_sent'.trParams({'gift': event.giftName}),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.white70, fontSize: 11),
+                ),
+              ],
+            ),
           ),
           const SizedBox(width: 10),
-          AnimatedScale(
-            scale: slot.bump ? 1.3 : 1.0,
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeOut,
-            child: event.giftImage.isEmpty
-                ? const Icon(
-                    Icons.card_giftcard,
+          TweenAnimationBuilder<double>(
+            key: ValueKey(slot.combo),
+            tween: Tween(begin: slot.combo == 1 ? 1.0 : 1.3, end: 1.0),
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.elasticOut,
+            builder: (context, scale, child) =>
+                Transform.scale(scale: scale, child: child),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                event.giftImage.isEmpty
+                    ? const Icon(
+                        Icons.card_giftcard,
+                        color: Colors.white,
+                        size: 26,
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: event.giftImage,
+                        width: 28,
+                        height: 28,
+                        errorWidget: (_, __, ___) => const Icon(
+                          Icons.card_giftcard,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                      ),
+                const SizedBox(width: 4),
+                Text(
+                  '×${slot.combo}',
+                  style: const TextStyle(
                     color: Colors.white,
-                    size: 26,
-                  )
-                : CachedNetworkImage(
-                    imageUrl: event.giftImage,
-                    width: 28,
-                    height: 28,
-                    errorWidget: (_, __, ___) => const Icon(
-                      Icons.card_giftcard,
-                      color: Colors.white,
-                      size: 26,
-                    ),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
-          ),
-          const SizedBox(width: 4),
-          AnimatedScale(
-            scale: slot.bump ? 1.3 : 1.0,
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeOut,
-            child: Text(
-              'x${slot.combo}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -366,16 +404,16 @@ class _ComboButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Combo',
-                    style: TextStyle(
+                  Text(
+                    'live_gift_combo'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    'x$combo',
+                    '×$combo',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 13,

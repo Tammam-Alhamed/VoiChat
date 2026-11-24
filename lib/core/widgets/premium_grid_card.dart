@@ -56,176 +56,201 @@ class _PremiumGridCardState extends State<PremiumGridCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        widget.onTap();
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
-      child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOutQuart,
-        child: AnimatedOpacity(
-          opacity: _isPressed ? 0.8 : 1.0,
-          duration: const Duration(milliseconds: 150),
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: _getImageProvider(widget.bgUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Stack(
-              children: [
-                if (widget.isLive)
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: Image.asset(
-                            widget.viewsIconUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.liveViews,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final nameFontSize = (constraints.maxWidth * 0.07).clamp(
+          11.0,
+          14.0,
+        ).toDouble();
+        final scaledNameFontSize = MediaQuery.textScalerOf(
+          context,
+        ).scale(nameFontSize);
+        final avatarDiameter = (scaledNameFontSize * 2)
+            .clamp(24.0, 36.0)
+            .toDouble();
+        final avatarRadius = avatarDiameter / 2;
+
+        return GestureDetector(
+          onTapDown: (_) => setState(() => _isPressed = true),
+          onTapUp: (_) {
+            setState(() => _isPressed = false);
+            widget.onTap();
+          },
+          onTapCancel: () => setState(() => _isPressed = false),
+          child: AnimatedScale(
+            scale: _isPressed ? 0.95 : 1.0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOutQuart,
+            child: AnimatedOpacity(
+              opacity: _isPressed ? 0.8 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: _getImageProvider(widget.bgUrl),
+                    fit: BoxFit.cover,
                   ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black87],
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.isLive) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
+                ),
+                child: Stack(
+                  children: [
+                    if (widget.isLive)
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: Image.asset(
+                                widget.viewsIconUrl,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 255, 27, 27),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text(
-                              "LIVE",
-                              style: TextStyle(
+                            const SizedBox(width: 4),
+                            Text(
+                              widget.liveViews,
+                              style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 10,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Colors.black87],
                           ),
-                          const SizedBox(height: 6),
-                        ],
-                        InkWell(
-                          onTap: () {
-                            Get.to(
-                              TargetProfileScreen(
-                                userId: widget.userId,
-                                userName: widget.name,
-                                userImage: widget.avatarUrl,
-                                index: widget.index,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (widget.isLive) ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(
+                                    255,
+                                    255,
+                                    27,
+                                    27,
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  "LIVE",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              widget.isOnline && !widget.isLive
-                                  ? CircleAvatar(
-                                      backgroundColor: const Color.fromARGB(
-                                        255,
-                                        2,
-                                        248,
-                                        22,
-                                      ),
-                                      radius: 15,
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.grey[100],
-                                        radius: 14,
-                                        backgroundImage: AvatarHelper.resolve(
-                                          widget.avatarUrl,
-                                        ),
-                                      ),
-                                    )
-                                  : CircleAvatar(
-                                      radius: 14,
-                                      backgroundColor: Colors.grey[100],
-                                      backgroundImage: AvatarHelper.resolve(
-                                        widget.avatarUrl,
-                                      ),
-                                    ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      widget.name,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: "Roboto",
-                                      ),
-                                      maxLines: 1,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.diamond,
-                                          size: 15,
-                                          color: Colors.white,
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          widget.diamonds,
-                                          style: const TextStyle(
-                                            color: Color(0xFFBBBBBB),
-                                            fontSize: 12,
+                              const SizedBox(height: 6),
+                            ],
+                            InkWell(
+                              onTap: () {
+                                Get.to(
+                                  TargetProfileScreen(
+                                    userId: widget.userId,
+                                    userName: widget.name,
+                                    userImage: widget.avatarUrl,
+                                    index: widget.index,
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  widget.isOnline && !widget.isLive
+                                      ? CircleAvatar(
+                                          backgroundColor:
+                                              const Color.fromARGB(
+                                                255,
+                                                2,
+                                                248,
+                                                22,
+                                              ),
+                                          radius: avatarRadius,
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.grey[100],
+                                            radius: avatarRadius - 1,
+                                            backgroundImage:
+                                                AvatarHelper.resolve(
+                                                  widget.avatarUrl,
+                                                ),
                                           ),
+                                        )
+                                      : CircleAvatar(
+                                          radius: avatarRadius,
+                                          backgroundColor: Colors.grey[100],
+                                          backgroundImage: AvatarHelper.resolve(
+                                            widget.avatarUrl,
+                                          ),
+                                        ),
+                                  SizedBox(width: avatarRadius * 0.55),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          widget.name,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: nameFontSize,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: "Roboto",
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.diamond,
+                                              size: avatarRadius + 1,
+                                              color: Colors.grey.shade400,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              widget.diamonds,
+                                              style: TextStyle(
+                                                color: const Color(0xFFBBBBBB),
+                                                fontSize: nameFontSize * 0.86,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

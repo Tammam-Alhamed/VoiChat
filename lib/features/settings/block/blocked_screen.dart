@@ -8,6 +8,8 @@ import 'package:shoeebapk/core/enums/page_state.dart';
 
 import 'blocked_users_provider.dart';
 import '../../../core/themes/app_dark_colors.dart';
+import '../../../core/widgets/settings_app_bar.dart';
+import '../../../core/widgets/app_state_view.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -47,14 +49,8 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return Scaffold(
       backgroundColor: context.shellBackground,
 
-      appBar: AppBar(
-        backgroundColor: context.shellBackground,
-        elevation: 0,
-        foregroundColor: context.shellTextPrimary,
-        title: Text(
-          "blocked_users".tr,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-        ),
+      appBar: SettingsAppBar(
+        title: "blocked_users".tr,
         actions: [
           IconButton(
             icon: SvgPicture.asset(
@@ -105,32 +101,26 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
 
           // 3. حالة القائمة فارغة
           if (provider.pageState == PageState.empty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF1F3F6),
-                      shape: BoxShape.circle,
+            return RefreshIndicator(
+              color: const Color(0xFF7247EF),
+              onRefresh: provider.fetchBlockedUsers,
+              child: LayoutBuilder(
+                builder: (context, constraints) => ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: AppStateView.illustratedEmpty(
+                        icon: Icons.person_off_outlined,
+                        iconAsset: 'assets/icons/block.svg',
+                        title: 'no_blocked_users'.tr,
+                        message: 'pull_down_to_refresh'.tr,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.person_off_rounded,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "no_blocked_users".tr,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }

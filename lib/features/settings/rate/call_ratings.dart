@@ -28,6 +28,8 @@ class _CallRatingScreenState extends State<CallRatingScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
+        leadingWidth: 44,
+        titleSpacing: 4,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(

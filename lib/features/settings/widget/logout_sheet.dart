@@ -28,7 +28,10 @@ class _LogOutBottomSheetState extends State<LogOutBottomSheet> {
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      child: Column(
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           /// Title
@@ -108,6 +111,8 @@ class _LogOutBottomSheetState extends State<LogOutBottomSheet> {
             ),
           ),
         ],
+          ),
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
@@ -203,6 +204,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (provider.messages.isEmpty) {
+                      if (widget.isSupportChat) {
+                        return _buildSupportEmptyState(context);
+                      }
                       final startsRequest =
                           provider.isNewChat && !widget.isSupportChat;
                       return Center(
@@ -262,6 +266,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // بناء الشريط العلوي (صورة المستخدم، اسمه، وحالته)
   Widget _buildCustomAppBar(BuildContext context) {
+    if (widget.isSupportChat) return _buildSupportAppBar(context);
     return Consumer<ChatViewModel>(
       builder: (context, provider, _) {
         // Once the first fetchMessages() resolves, the server-resolved
@@ -371,6 +376,81 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSupportAppBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 44,
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios_new),
+              color: context.shellTextPrimary,
+            ),
+          ),
+          const SizedBox(width: 4),
+          CircleAvatar(
+            radius: 21,
+            backgroundColor: const Color(0xFFD9D9D9),
+            child: SvgPicture.asset(
+              'assets/icons/support_headset.svg',
+              width: 27,
+              height: 27,
+              colorFilter: const ColorFilter.mode(
+                Colors.black,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'support'.tr,
+            style: TextStyle(
+              color: context.shellTextPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              'assets/icons/support_headset.svg',
+              width: 72,
+              height: 72,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'contact_support'.tr,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: context.shellTextPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'contact_support_description'.tr,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: context.shellTextPrimary),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1301,13 +1381,14 @@ class _ChatScreenState extends State<ChatScreen> {
   // and a trailing round button that's 🎁 when empty or ➤ once typing.
   Widget _buildTextComposerRow() {
     final hasText = _messageController.text.trim().isNotEmpty;
+    final isComposing = _messageController.text.isNotEmpty;
 
     return Row(
       children: [
         Expanded(
           child: Container(
-            height: 45,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            constraints: const BoxConstraints(minHeight: 45),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(22),
@@ -1318,11 +1399,21 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _messageController,
                     focusNode: _inputFocusNode,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    decoration: const InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: TextStyle(
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: TextInputAction.newline,
+                    minLines: 1,
+                    maxLines: 4,
+                    textDirection: widget.isSupportChat
+                        ? Directionality.of(context)
+                        : TextDirection.rtl,
+                    textAlign: widget.isSupportChat
+                        ? TextAlign.start
+                        : TextAlign.right,
+                    decoration: InputDecoration(
+                      hintText: widget.isSupportChat
+                          ? 'message_support_hint'.tr
+                          : 'Type a message...',
+                      hintStyle: const TextStyle(
                         color: Color(0xFF6E6D6D),
                         fontSize: 15,
                       ),
@@ -1343,21 +1434,25 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(width: 12),
                 ],
-                if (!_textOnlyComposer) ...[
+                if (!_textOnlyComposer && !isComposing) ...[
                   InkWell(
                     onTap: () => _showAttachSheet(ImageSource.gallery),
-                    child: const Icon(
+                    child: Icon(
                       Icons.attach_file,
-                      color: Color(0xFF6E6D6D),
+                      color: widget.isSupportChat
+                          ? Colors.black
+                          : const Color(0xFF6E6D6D),
                       size: 20,
                     ),
                   ),
                   const SizedBox(width: 12),
                   InkWell(
                     onTap: () => _showAttachSheet(ImageSource.camera),
-                    child: const Icon(
+                    child: Icon(
                       Icons.camera_alt_outlined,
-                      color: Color(0xFF6E6D6D),
+                      color: widget.isSupportChat
+                          ? Colors.black
+                          : const Color(0xFF6E6D6D),
                       size: 20,
                     ),
                   ),

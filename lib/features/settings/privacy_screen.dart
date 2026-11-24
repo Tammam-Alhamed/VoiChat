@@ -9,6 +9,8 @@ import '../../core/network/service_helper.dart';
 import '../../core/utils/api_status.dart';
 import '../../app/di/injection_container.dart';
 import '../../core/themes/app_dark_colors.dart';
+import '../../core/widgets/settings_app_bar.dart';
+import '../../core/widgets/settings_widgets.dart';
 import 'block/blocked_screen.dart';
 
 class PrivacyScreen extends StatefulWidget {
@@ -102,112 +104,78 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.shellBackground,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            Navigator.pop(context);
-                          },
-                          child: Icon(
-                            Icons.arrow_back_ios_new,
-                            color: context.shellTextPrimary,
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          "privacy".tr,
-                          style: TextStyle(
-                            color: context.shellTextPrimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (_isLoading)
-                      const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                  ],
+      appBar: SettingsAppBar(
+        title: "privacy".tr,
+        actions: [
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(
+                child: SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
+            ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: SettingsMetrics.pagePadding,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
 
-              const SizedBox(height: 20),
+            /// Hide Country
+            settingSwitch(
+              title: "hide_country".tr,
+              subtitle: "hide_country_desc".tr,
+              value: hideCountry,
+              onChanged: (v) {
+                setState(() => hideCountry = v);
+                _saveSetting(hideCountryValue: v);
+              },
+            ),
 
-              /// Hide Country
-              settingSwitch(
-                title: "hide_country".tr,
-                subtitle: "hide_country_desc".tr,
-                value: hideCountry,
-                onChanged: (v) {
-                  setState(() => hideCountry = v);
-                  _saveSetting(hideCountryValue: v);
-                },
-              ),
+            /// Last Seen
+            settingSwitch(
+              title: "last_time_seen".tr,
+              subtitle: "last_seen_desc".tr,
+              value: lastSeen,
+              onChanged: (v) {
+                setState(() => lastSeen = v);
+                _saveSetting(hideLastSeenValue: v);
+              },
+            ),
 
-              const SizedBox(height: 25),
+            /// Total Spend
+            settingSwitch(
+              title: "total_spend".tr,
+              subtitle: "total_spend_desc".tr,
+              value: totalSpend,
+              onChanged: (v) {
+                setState(() => totalSpend = v);
+                _saveSetting(hideTotalSpendValue: v);
+              },
+            ),
 
-              /// Last Seen
-              settingSwitch(
-                title: "last_time_seen".tr,
-                subtitle: "last_seen_desc".tr,
-                value: lastSeen,
-                onChanged: (v) {
-                  setState(() => lastSeen = v);
-                  _saveSetting(hideLastSeenValue: v);
-                },
-              ),
+            const SizedBox(height: 25),
 
-              const SizedBox(height: 25),
+            /// Other
+            SettingsSectionHeader(title: "other".tr),
+            const SizedBox(height: 6),
 
-              /// Total Spend
-              settingSwitch(
-                title: "total_spend".tr,
-                subtitle: "total_spend_desc".tr,
-                value: totalSpend,
-                onChanged: (v) {
-                  setState(() => totalSpend = v);
-                  _saveSetting(hideTotalSpendValue: v);
-                },
-              ),
-
-              const SizedBox(height: 35),
-
-              /// Other
-              Text(
-                "other".tr,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF7A7A7A)),
-              ),
-
-              const SizedBox(height: 10),
-
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  "blocked_users".tr,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Get.to(const BlockedUsersScreen());
-                },
-              ),
-            ],
-          ),
+            SettingsRow(
+              title: "blocked_users".tr,
+              trailing: const SettingsChevron(),
+              onTap: () {
+                Get.to(const BlockedUsersScreen());
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -219,29 +187,38 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     required bool value,
     required Function(bool) onChanged,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(title, style: const TextStyle(fontSize: 20)),
-            Switch(
-              value: value,
-              activeTrackColor: const Color(0xFF7B13E2),
-              inactiveTrackColor: const Color(0xFFE3E3E3),
-              thumbColor: WidgetStateProperty.all(Colors.white),
-              trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
-              onChanged: onChanged,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: SettingsMetrics.rowVerticalPadding,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: SettingsMetrics.rowTitleSize,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: SettingsMetrics.rowSubtitleSize,
+                    color: SettingsMetrics.secondaryText,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          subtitle,
-          style: const TextStyle(fontSize: 12, color: Color(0xFF7A7A7A)),
-        ),
-      ],
+          ),
+          const SizedBox(width: SettingsMetrics.iconTextGap),
+          SettingsSwitch(value: value, onChanged: (v) => onChanged(v)),
+        ],
+      ),
     );
   }
 }

@@ -6,7 +6,8 @@ const Map<String, String> it = {
   "continue_with_google": "Continua con Google",
   "continue_with_phone": "Continua con il telefono",
   "continue_with_email": "Continua con l'e-mail",
-  "footer_age_confirm": "Continuando, confermi di avere almeno 18 anni e accetti",
+  "footer_age_confirm":
+      "Continuando, confermi di avere almeno 18 anni e accetti",
   "to_our": "i nostri",
   "terms_of_use": "Termini di utilizzo",
   "and_conjunction": "e",
@@ -21,11 +22,13 @@ const Map<String, String> it = {
   "mobile_number": "Numero di telefono",
 
   "enter_your_email": "Inserisci la tua e-mail",
-  "email_otp_subtitle": "Ti invieremo un codice OTP per verificare la tua e-mail.",
+  "email_otp_subtitle":
+      "Ti invieremo un codice OTP per verificare la tua e-mail.",
   "email_address": "Indirizzo e-mail",
   "send_otp": "Invia OTP",
   "enter_valid_email_address": "Inserisci un indirizzo e-mail valido",
-  "email_not_registered_please_use_google": "Questa e-mail non è registrata. Continua con Google per registrarti.",
+  "email_not_registered_please_use_google":
+      "Questa e-mail non è registrata. Continua con Google per registrarti.",
 
   "enter_verification_code": "Inserisci il codice di verifica",
   "code_sent_via": "Il codice è stato inviato a @contact tramite @method",
@@ -53,6 +56,23 @@ const Map<String, String> it = {
   "personal_info": "Informazioni personali",
   "phone_number": "Numero di telefono",
   "other": "Altro",
+  "report_reason_spam": "Spam",
+  "report_reason_harassment_bullying": "Molestie o bullismo",
+  "report_reason_sexual_content_nudity": "Contenuti sessuali o nudità",
+  "report_reason_child_safety": "Sicurezza dei minori",
+  "report_reason_violence_threats": "Violenza o minacce",
+  "report_reason_scams_fraud": "Truffe e frodi",
+  "report_reason_fake_profile_impersonation": "Profilo falso o furto d'identità",
+  "report_reason_privacy_violation": "Violazione della privacy",
+  "report_reason_dangerous_illegal_activities": "Attività pericolose o illegali",
+  "report_reason_hate_speech_discrimination": "Discorsi d'odio o discriminazione",
+  "report_reason_inappropriate_content": "Contenuti inappropriati",
+  "report_reason_other": "Altro",
+  "report_user": "Segnala",
+  "report_main_reason": "Motivo principale della segnalazione:",
+  "report_additional_details": "Dettagli aggiuntivi (facoltativi):",
+  "report_details_hint": "Scrivi dettagli per aiutare a esaminare l'account...",
+  "report_submit": "Invia segnalazione",
   "join_an_agency": "Unisciti a un'agenzia",
   "already_in_agency": "Fai già parte di un'agenzia",
   "linked_device": "Dispositivo collegato",
@@ -88,7 +108,8 @@ const Map<String, String> it = {
   "all_word": "Tutti",
   "personal_data": "i dati personali",
   "will_be_removed": "verranno rimossi.",
-  "delete_account_coming_soon": "La funzione di eliminazione account arriverà presto",
+  "delete_account_coming_soon":
+      "La funzione di eliminazione account arriverà presto",
   "confirm_account_deletion": "Conferma eliminazione account",
   "cancel": "Annulla",
 
@@ -108,6 +129,13 @@ const Map<String, String> it = {
   "creator_hub": "Hub creator",
   "performance": "Prestazioni",
   "payout": "Pagamento",
+  "payout_available_balance": "Saldo disponibile",
+  "payout_amount": "Importo",
+  "payout_bank_transfer": "Bonifico bancario",
+  "payout_agent_payout": "Prelievo tramite agente",
+  "payout_withdraw": "Preleva",
+  "payout_invalid_amount": "Inserisci un importo di prelievo valido",
+  "payout_amount_exceeds_balance": "L'importo supera il saldo disponibile",
   "call_rating": "Valutazione chiamate",
   "partner_hub": "Hub partner",
   "manage_creators": "Gestisci creator",
@@ -116,11 +144,41 @@ const Map<String, String> it = {
   "notifications": "Notifiche",
   "privacy": "Privacy",
   "display": "Schermo",
+  "display_light": "Chiaro",
+  "display_dark": "Scuro",
+  "display_system": "Sistema",
+  "display_system_unavailable": "Il tema di sistema non è ancora disponibile; scegli Chiaro o Scuro",
+  "display_ok": "OK",
   "support": "Assistenza",
+  "contact_support": "Contatta l'assistenza",
+  "contact_support_description": "Ricevi aiuto dal nostro team.",
+  "message_support_hint": "Scrivi all'assistenza...",
+  "help_and_support": "Aiuto e supporto",
+  "support_info": "Informazioni di supporto",
+  "help_faq": "Aiuto e FAQ",
+  "voichat": "VoiChat",
+  "faq_search_hint_detail":
+      "Digita una parola per filtrare le domande. Tocca una domanda per aprire la risposta.",
+  "clear": "Cancella",
+  "faq_introduction": "Introduzione",
+  "faq_intro_body":
+      "Benvenuto su VoiChat! Trova risposte su account, profilo, chat, chiamate, dirette, monete, regali, abbonamenti, verifica, privacy e impostazioni.",
+  "faq_intro_support":
+      "Se hai bisogno di aiuto, contatta il team VoiChat tramite la chat di assistenza nell'app.",
+  "faq_footer_support":
+      "Hai bisogno di aiuto? Contatta VoiChat tramite la chat di assistenza nell'app.",
+  "faq_footer_copyright": "© VoiChat. Tutti i diritti riservati.",
+  "help_faq_description": "Trova risposte alle domande comuni su VoiChat.",
   "support_chat": "Chat di assistenza",
+  "support_chat_description":
+      "Contatta il nostro team per ulteriore assistenza.",
+  "faq_search_hint": "Cerca domande e risposte…",
+  "faq_no_results": "Nessuna domanda corrispondente trovata.",
+  "faq_load_error": "Impossibile caricare le FAQ.",
   "logins": "Accessi",
   "logout": "Esci",
-  "app_footer_version": "Versione 1.1.0\n© 2026 VoiChat. Tutti i diritti riservati\n\n",
+  "app_footer_version":
+      "Versione 1.1.0\n© 2026 VoiChat. Tutti i diritti riservati\n\n",
   "terms_and_conditions": "Termini e condizioni",
 
   // ─── Privacy ─────────────────────────────────────────────────────────────
@@ -131,7 +189,8 @@ const Map<String, String> it = {
   "total_spend": "Spesa totale",
   "total_spend_desc": "Mostra quanto hai speso nell'app.",
   "blocked_users": "Utenti bloccati",
-  "privacy_settings_updated": "Le impostazioni sulla privacy sono state aggiornate",
+  "privacy_settings_updated":
+      "Le impostazioni sulla privacy sono state aggiornate",
 
   // ─── Blocked users ───────────────────────────────────────────────────────
   "failed_load_blocked_users": "Impossibile caricare gli utenti bloccati",
@@ -139,16 +198,24 @@ const Map<String, String> it = {
   "no_blocked_users": "Nessun utente bloccato",
   "unblock": "Sblocca",
   "block_user_title": "Bloccare @name?",
-  "block_user_warning": "Non potrai vedere i contenuti di questo account né comunicare di nuovo con lui dopo averlo bloccato.",
+  "block_user_warning":
+      "Non potrai vedere i contenuti di questo account né comunicare di nuovo con lui dopo averlo bloccato.",
   "confirm_block": "Conferma blocco",
   "unblock_success_message": "Ora puoi comunicare di nuovo con @name.",
+
+  "notifications_subtitle": "Tutti i tuoi ultimi aggiornamenti appariranno qui",
 
   // ─── Notification settings ───────────────────────────────────────────────
   "live_stream": "Diretta streaming",
   "live_notification": "Notifica diretta",
-  "live_notification_desc": "Ricevi una notifica quando i tuoi amici sono in diretta",
+  "live_notification_desc":
+      "Ricevi una notifica quando i tuoi amici sono in diretta",
   "in_app_sound": "Suono nell'app",
   "in_app_vibrations": "Vibrazione nell'app",
+
+  // ─── Live gift banner ───────────────────────────────────────────────────
+  "live_gift_sent": "Ha inviato @gift",
+  "live_gift_combo": "Combo",
 
   // ─── Home shell (bottom nav + exit confirmation) ────────────────────────
   "home": "Home",
@@ -159,6 +226,26 @@ const Map<String, String> it = {
   "exit_app_confirm": "Sei sicuro di voler uscire?",
   "exit": "Esci",
   "access_denied": "Accesso negato",
+
+  // ─── Centered content empty states ──────────────────────────────────────
+  "no_messages_yet": "Nessun messaggio per ora",
+  "no_recent_calls": "Nessuna chiamata recente per ora",
+  "no_live_streams": "Nessuna diretta in corso",
+  "no_online_users": "Nessun utente online per ora",
+  "no_country_users": "Nessun utente trovato in questo paese",
+  "no_discover_users": "Nessun utente trovato",
+  "start_a_conversation": "Inizia una conversazione",
+  "no_notifications_yet": "Nessuna notifica per ora",
+  "pull_down_to_refresh": "Scorri verso il basso per aggiornare",
+  "no_followings_yet": "Non segui ancora nessuno",
+  "no_results_found": "Nessun risultato trovato",
+  "no_photos_yet": "Nessuna foto per ora",
+  "photos_will_appear_here": "Le foto che condividi appariranno qui.",
+  "no_videos_yet": "Nessun video per ora",
+  "videos_will_appear_here": "I video che pubblichi appariranno qui",
+
+  "user_photos_will_appear_here": "Le foto condivise da questo utente appariranno qui.",
+  "user_videos_will_appear_here": "I video pubblicati da questo utente appariranno qui.",
 
   // ─── Shared error / empty state (AppStateView) ──────────────────────────
   "something_went_wrong": "Qualcosa è andato storto",

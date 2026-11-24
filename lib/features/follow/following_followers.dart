@@ -204,7 +204,7 @@ class _FollowingFragmentState extends State<FollowingScreen>
                             ? 'loading_follower_$i'
                             : '${f.profileImage}_follower_${f.id}',
                         child: CircleAvatar(
-                          radius: 32,
+                          radius: 27,
                           backgroundColor: context.shellAvatarPlaceholder,
                           backgroundImage: AvatarHelper.resolve(f.profileImage),
                         ),
@@ -365,7 +365,7 @@ class FollowingUserRow extends StatelessWidget {
                     ? 'loading_following_$index'
                     : '${avatarUrl}_following_${userId}_$index',
                 child: CircleAvatar(
-                  radius: 32,
+                  radius: 27,
                   backgroundColor: context.shellAvatarPlaceholder,
                   backgroundImage: AvatarHelper.resolve(avatarUrl),
                 ),
@@ -387,12 +387,14 @@ class FollowingUserRow extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(width: 14),
-        Text(
-          name,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            name,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
         ),
-        const Spacer(),
+        const SizedBox(width: 8),
         if (trailing != null) trailing!,
         //  SvgPicture.asset(AssetsManager.chatFollwing, width: 24),
         //  const SizedBox(width: 16),

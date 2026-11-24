@@ -6,6 +6,7 @@ import 'package:shoeebapk/core/assets_manager.dart';
 import 'package:shoeebapk/core/country_helper.dart';
 import 'package:shoeebapk/core/helpers/avatar_helper.dart';
 import 'package:shoeebapk/core/helpers/wallet_helper.dart';
+import 'package:shoeebapk/core/widgets/app_state_view.dart';
 import 'package:shoeebapk/features/settings/account_center_screen.dart';
 
 import '../../../../../testlivekit/test_livekit_screen.dart';
@@ -120,7 +121,7 @@ class ProfileLoadedContent extends StatelessWidget {
           onPageChanged: onPageChanged,
           children: [
             _buildPhotosGrid(context),
-            _buildNoVideosPlaceholder(context),
+            _buildNoVideosPlaceholder(),
           ],
         ),
       ),
@@ -386,8 +387,11 @@ class ProfileLoadedContent extends StatelessWidget {
   Widget _buildPhotosGrid(BuildContext context) {
     final posts = provider.posts;
     if (posts.isEmpty) {
-      return const Center(
-        child: Text("No posts yet", style: TextStyle(color: Colors.grey)),
+      return AppStateView.illustratedEmpty(
+        icon: Icons.image_outlined,
+        iconAsset: 'assets/icons/empty_photo.svg',
+        title: 'no_photos_yet'.tr,
+        message: 'photos_will_appear_here'.tr,
       );
     }
     return GridView.builder(
@@ -432,44 +436,12 @@ class ProfileLoadedContent extends StatelessWidget {
     );
   }
 
-  Widget _buildNoVideosPlaceholder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 60),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: context.shellSkeleton,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.videocam_off,
-                size: 40,
-                color: context.shellTextSecondary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "No Videos Yet",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: context.shellTextPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "When you post videos, they will appear here",
-              style: TextStyle(fontSize: 14, color: context.shellTextSecondary),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+  Widget _buildNoVideosPlaceholder() {
+    return AppStateView.illustratedEmpty(
+      icon: Icons.video_camera_back_outlined,
+      iconAsset: 'assets/icons/empty_video.svg',
+      title: 'no_videos_yet'.tr,
+      message: 'videos_will_appear_here'.tr,
     );
   }
 }

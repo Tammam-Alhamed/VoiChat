@@ -1,0 +1,249 @@
+[
+  {
+    "title": "1. Account & Profile",
+    "items": [
+      {
+        "question": "Q1. How can I create a VoiChat account?",
+        "answer": "You can register using your email address or phone number. Phone registration requires OTP verification, while email registration does not require an OTP during initial registration."
+      },
+      {
+        "question": "Q2. What information is required to register, and what is the minimum age?",
+        "answer": "You must be at least 18 years old to use VoiChat. During registration, you will be asked to enter your name and age."
+      },
+      {
+        "question": "Q3. Can I change my email address or phone number?",
+        "answer": "A linked email address cannot be changed. You can change your phone number through the app settings, subject to the required verification."
+      },
+      {
+        "question": "Q4. How can I recover my account after reinstalling VoiChat?",
+        "answer": "Select Continue with Email, enter the email address linked to your account, and verify the OTP sent to that email address. Reinstalling the app does not automatically delete your account."
+      },
+      {
+        "question": "Q5. What if I lose access to my linked email address or phone number?",
+        "answer": "Contact Support Chat for assistance. You may be asked to provide information to verify account ownership. Account recovery is not guaranteed."
+      },
+      {
+        "question": "Q6. How can I change my profile picture?",
+        "answer": "Go to your profile and select Edit Profile. You can take a photo using your camera or choose one from your device’s gallery."
+      },
+      {
+        "question": "Q7. How can I publish or delete a post?",
+        "answer": "Go to your profile and select Add Post to publish a photo or video. You can delete your own posts from your profile."
+      },
+      {
+        "question": "Q8. Who can see my posts?",
+        "answer": "Your posts are visible to VoiChat users."
+      },
+      {
+        "question": "Q9. Can I change my name, gender, or age?",
+        "answer": "You can change your name and gender through Edit Profile. You can update your age once every six months."
+      }
+    ]
+  },
+  {
+    "title": "2. Coins & Payments",
+    "items": [
+      {
+        "question": "Q1. How can I purchase Coins?",
+        "answer": "Open Settings or tap the (+) icon next to your Coin balance to access the Recharge Center. Choose a Coin package and complete the payment."
+      },
+      {
+        "question": "Q2. What can I use Coins for?",
+        "answer": "Coins can be used for private video calls and sending gifts during live streams."
+      },
+      {
+        "question": "Q3. Can I transfer Coins directly to another user?",
+        "answer": "No. Direct transfers of Coins between user accounts are not supported."
+      },
+      {
+        "question": "Q4. What should I do if I paid for Coins but did not receive them?",
+        "answer": "Contact Support Chat and provide your transaction or order ID, payment platform, and relevant purchase details. Never share your password or verification codes."
+      },
+      {
+        "question": "Q5. Are Coin purchases refundable?",
+        "answer": "Refund eligibility depends on applicable law and the relevant app store or payment provider’s policies."
+      },
+      {
+        "question": "Q6. How do creators earn from gifts?",
+        "answer": "Creators receive Diamonds from gifts sent by users. These Diamonds count toward eligible creator earnings."
+      },
+      {
+        "question": "Q7. What are the withdrawal requirements, and how can creators withdraw their earnings?",
+        "answer": "Withdrawal conditions may include a minimum earnings threshold and other eligibility requirements. Open the Wallet or withdrawal section to review the current requirements and available withdrawal methods."
+      },
+      {
+        "question": "Q8. What is the difference between Coins and Diamonds?",
+        "answer": "Coins are used for private video calls and gifts. Diamonds are earned by creators from gifts they receive and count toward eligible withdrawable earnings."
+      }
+    ]
+  },
+  {
+    "title": "3. Memberships & Verification",
+    "items": [
+      {
+        "question": "Q1. What is SVIP membership?",
+        "answer": "SVIP is a paid membership that provides additional features. The available benefits are listed in the membership section of VoiChat."
+      },
+      {
+        "question": "Q2. Does SVIP renew automatically, and how can I cancel it?",
+        "answer": "SVIP subscriptions renew automatically unless canceled, subject to the applicable subscription terms. Cancel through the platform where you purchased it: Google Play subscription settings, Apple subscription settings, or the relevant account or subscription settings on the VoiChat website."
+      },
+      {
+        "question": "Q3. What happens when I cancel SVIP or my membership expires?",
+        "answer": "Your benefits remain active until the end of the current paid period. After that period ends, benefits requiring an active SVIP membership stop."
+      },
+      {
+        "question": "Q4. What should I do if I paid for SVIP but my benefits are not active?",
+        "answer": "Contact Support Chat and provide your purchase or transaction details."
+      },
+      {
+        "question": "Q5. Can I use website-purchased SVIP in the app?",
+        "answer": "Yes. Sign in to the app using the same VoiChat account associated with your website purchase. If your membership does not appear, contact Support Chat."
+      },
+      {
+        "question": "Q6. How do I get a VIP badge, and how long does it last?",
+        "answer": "The VIP badge activates when you top up Coins, regardless of the amount. It remains active for one month and appears during live interactions. VIP and SVIP are different: VIP is activated by topping up Coins, while SVIP is a paid membership subscription."
+      },
+      {
+        "question": "Q7. How can I activate Purple Verified+?",
+        "answer": "Open the Purple Verified+ page in the app, verify your phone number using the OTP sent to you, and subscribe to the feature using Coins. No separate application is required."
+      },
+      {
+        "question": "Q8. Is Purple Verified+ free or permanent?",
+        "answer": "No. Purple Verified+ is a paid monthly feature. Check its page in the app for the current Coin cost and available subscription details. When the subscription expires, the status ends unless you renew it."
+      }
+    ]
+  },
+  {
+    "title": "4. Private Chat, Calls & Live Streaming",
+    "items": [
+      {
+        "question": "Q1. How can I send a private message, and what happens when it is accepted?",
+        "answer": "Send a message request to the user. They must accept it before the private conversation opens. Once accepted, you can exchange supported message types without requesting approval for every message."
+      },
+      {
+        "question": "Q2. Do SVIP members receive priority for message requests?",
+        "answer": "Yes. SVIP members receive priority for private message requests according to the membership benefits available in VoiChat."
+      },
+      {
+        "question": "Q3. How can I make a private video call?",
+        "answer": "Open the other user’s profile or conversation and select the video call option. You must have enough Coins to make the call. SVIP membership is not required."
+      },
+      {
+        "question": "Q4. Does sending a gift guarantee a free video call?",
+        "answer": "No. Sending a gift may make you eligible for a free video call for a limited time, but the creator must initiate the call. A gift does not guarantee that a call will take place."
+      },
+      {
+        "question": "Q5. Can I rate a video call after it ends?",
+        "answer": "Yes. You can use the call rating option available after the call ends."
+      },
+      {
+        "question": "Q6. Who can start a live stream, and how can they start one?",
+        "answer": "Only eligible creators can start live streams. Eligible creators can tap the live streaming button, follow the setup options, and select Go Live."
+      },
+      {
+        "question": "Q7. How can I watch live streams and find users by country?",
+        "answer": "You can discover live streams through the Home or Live sections and view online users through the Online section. Use the country filter to find live streams or online users from a selected country."
+      },
+      {
+        "question": "Q8. How can I send a gift during a live stream?",
+        "answer": "Tap the gift icon, choose a gift, and send it using your available Coins."
+      },
+      {
+        "question": "Q9. Can I make a video call with a creator during a live stream?",
+        "answer": "A video call may be available if the call option is displayed during the creator’s live stream. Availability depends on the creator and the options shown in the app."
+      },
+      {
+        "question": "Q10. Can I share a live stream?",
+        "answer": "Use the share option when it is available for the stream."
+      }
+    ]
+  },
+  {
+    "title": "5. Safety & Privacy",
+    "items": [
+      {
+        "question": "Q1. How can I block or unblock a user?",
+        "answer": "Open the user’s profile, tap the menu, and select Block User. To unblock a user, go to Settings → Privacy → Blocked Users, select the user, and choose Unblock."
+      },
+      {
+        "question": "Q2. What happens when I block a user?",
+        "answer": "Blocking prevents both users from viewing or communicating with each other through VoiChat."
+      },
+      {
+        "question": "Q3. How can I report a user or live stream?",
+        "answer": "To report a user, open their profile, tap the menu, and select Report User. To report a live stream, open the creator’s profile from the stream, select Report, and follow the instructions."
+      },
+      {
+        "question": "Q4. What happens after I report a user?",
+        "answer": "VoiChat reviews user reports. If a violation is confirmed, appropriate action may be taken under the platform’s rules and policies."
+      },
+      {
+        "question": "Q5. Can I hide my country or last-seen status?",
+        "answer": "Yes. You can manage Hide Country and Last Time Seen in Privacy settings. Each feature requires a monthly SVIP subscription."
+      },
+      {
+        "question": "Q6. Can I control who sees my total spending?",
+        "answer": "Yes. You can manage the visibility of your Total Spend information in Privacy settings."
+      },
+      {
+        "question": "Q7. What should I do if my account is restricted or banned by mistake?",
+        "answer": "Contact Support Chat, explain the situation, and provide relevant details or screenshots if available. Your case can be reviewed, but the restriction may not necessarily be removed."
+      }
+    ]
+  },
+  {
+    "title": "6. Settings & Technical Issues",
+    "items": [
+      {
+        "question": "Q1. What should I do if private messages, video calls, or live streams are not working?",
+        "answer": "Check your internet connection and try again. If the problem continues, contact Support Chat."
+      },
+      {
+        "question": "Q2. How can I manage live stream notifications?",
+        "answer": "Go to Settings → Notifications → Live Notification to manage notifications about live streams."
+      },
+      {
+        "question": "Q3. How can I turn in-app sounds or vibrations on or off?",
+        "answer": "Go to Settings → Notifications and adjust In-App Sound or In-App Vibrations."
+      },
+      {
+        "question": "Q4. How can I change the app language?",
+        "answer": "Go to Settings → Account → Language Settings and choose from the available languages."
+      },
+      {
+        "question": "Q5. How can I view devices linked to my account?",
+        "answer": "Go to Settings → Account → Linked Device to view linked devices."
+      },
+      {
+        "question": "Q6. How can I delete my VoiChat account?",
+        "answer": "Go to Settings → Account → Delete Account. Follow the confirmation steps and read the deletion notice before confirming."
+      },
+      {
+        "question": "Q7. Can I recover my account after requesting deletion?",
+        "answer": "A recovery period may apply. Its duration and reactivation conditions are displayed in the app during the deletion process. Review this information carefully before confirming deletion."
+      }
+    ]
+  },
+  {
+    "title": "7. Creators & Agencies",
+    "items": [
+      {
+        "question": "Q1. How can I join an agency on VoiChat?",
+        "answer": "If you are an eligible female creator and have a valid six-character invitation code, go to Settings → Account → Join an Agency. Enter the code and follow the instructions."
+      },
+      {
+        "question": "Q2. Who can join an agency?",
+        "answer": "The agency joining feature is available to eligible female creators, subject to VoiChat’s requirements."
+      },
+      {
+        "question": "Q3. How can I find an agency or agent?",
+        "answer": "Contact the VoiChat Support Team through Support Chat for guidance."
+      },
+      {
+        "question": "Q4. How can I become a VoiChat agent?",
+        "answer": "Contact Support Chat to learn about the eligibility requirements and application process. Acceptance is subject to VoiChat’s requirements."
+      }
+    ]
+  }
+]

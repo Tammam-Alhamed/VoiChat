@@ -9,6 +9,7 @@ import 'package:shoeebapk/features/profile/state/target_profile_provider.dart';
 import 'package:shoeebapk/core/themes/app_dark_colors.dart';
 import 'package:shoeebapk/core/helpers/avatar_helper.dart';
 import 'package:shoeebapk/core/widgets/profile_photo_viewer.dart';
+import 'package:shoeebapk/core/widgets/app_state_view.dart';
 import 'package:shoeebapk/core/helpers/wallet_helper.dart';
 import '../calls/state/calls_provider.dart';
 import '../home/tabs/profile/widget/state_item.dart';
@@ -666,46 +667,13 @@ class _ProfileScreenState extends State<TargetProfileScreen>
   Widget _buildPhotosGrid(TargetProfileProvider provider) {
     final posts = provider.profile?.posts ?? [];
 
-    // إذا ما في صور، اعرض رسالة ثابتة بدون Scroll
     if (provider.pageState != ProfilePageState.loading && posts.isEmpty) {
-      return SizedBox(
+      return AppStateView.illustratedEmpty(
         key: const ValueKey('no_photos'),
-        height: 300,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.photo_library_outlined,
-                  size: 40,
-                  color: Colors.grey.shade400,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "No Photos Yet",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "When you post photos, they will appear here",
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
+        icon: Icons.image_outlined,
+        iconAsset: 'assets/icons/empty_photo.svg',
+        title: 'no_photos_yet'.tr,
+        message: 'user_photos_will_appear_here'.tr,
       );
     }
 
@@ -741,45 +709,12 @@ class _ProfileScreenState extends State<TargetProfileScreen>
   }
 
   Widget _buildNoVideosPlaceholder() {
-    // ثابت بدون Scroll
-    return SizedBox(
+    return AppStateView.illustratedEmpty(
       key: const ValueKey('no_videos'),
-      height: 300,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.videocam_off,
-                size: 40,
-                color: Colors.grey.shade400,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "No Videos Yet",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "When you post videos, they will appear here",
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+      icon: Icons.video_camera_back_outlined,
+      iconAsset: 'assets/icons/empty_video.svg',
+      title: 'no_videos_yet'.tr,
+      message: 'user_videos_will_appear_here'.tr,
     );
   }
 }

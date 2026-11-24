@@ -17,9 +17,80 @@ class SVIPMembershipScreen extends StatelessWidget {
           children: [
             Column(
               children: [
-                // App Bar - Back Button
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 15.h),
+                      // SVIP Crown Logo
+                      SizedBox(
+                        width: 120.w,
+                        child: Image.asset(
+                          "assets/icons/svip_logo.png", // التاج الذهبي
+                          fit: BoxFit.contain,
+                        ),
+                      ),
 
-                // Scrollable Content
+                      // SVIP Membership Title
+                      Text(
+                        "SVIP",
+                        style: TextStyle(
+                          color: const Color(0xFFD6A22B),
+                          fontSize: 23.sp,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      Text(
+                        "Membership",
+                        style: TextStyle(
+                          color: const Color(0xFFD6A22B),
+                          fontSize: 23.sp,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+
+                      SizedBox(height: 12.h),
+
+                      // Price Pill Button
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.h,
+                          horizontal: 45.w,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50.r),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color(0xFFFFF5A5), Color(0xFFEFBE3B)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 4.h),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          "\$29.99 / Month",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 35.h),
+                    ],
+                  ),
+                ),
+
+                // Only the benefits list scrolls between the fixed offer
+                // and the subscribe button.
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -27,70 +98,6 @@ class SVIPMembershipScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(height: 15.h),
-                        // SVIP Crown Logo
-                        SizedBox(
-                          width: 120.w,
-                          child: Image.asset(
-                            "assets/icons/svip_logo.png", // التاج الذهبي
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-
-                        // SVIP Membership Title
-                        Text(
-                          "SVIP",
-                          style: TextStyle(
-                            color: const Color(0xFFD6A22B),
-                            fontSize: 23.sp,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        Text(
-                          "Membership",
-                          style: TextStyle(
-                            color: const Color(0xFFD6A22B),
-                            fontSize: 23.sp,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-
-                        SizedBox(height: 12.h),
-
-                        // Price Pill Button
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 10.h,
-                            horizontal: 45.w,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50.r),
-                            gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Color(0xFFFFF5A5), Color(0xFFEFBE3B)],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 10,
-                                offset: Offset(0, 4.h),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            "\$29.99 / Month",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 22.sp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 35.h),
-
                         // Features list
                         _buildFeatureRow(
                           context,
@@ -147,13 +154,13 @@ class SVIPMembershipScreen extends StatelessWidget {
                 ),
               ],
             ),
-            Positioned(
+            PositionedDirectional(
               top: 10.w,
-              left: 0,
+              start: 0,
               child: Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                alignment: AlignmentDirectional.centerStart,
+                child: SizedBox(
+                  width: 44,
                   child: IconButton(
                     onPressed: () => Navigator.maybePop(context),
                     icon: Icon(

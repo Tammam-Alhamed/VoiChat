@@ -6,6 +6,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../../../core/helpers/avatar_helper.dart';
 import '../../../../../core/helpers/toast_helper.dart';
 import '../../../../../core/themes/app_dark_colors.dart';
+import '../../../../../core/widgets/settings_app_bar.dart';
 import '../../../../chat/chat_screen.dart';
 import '../models/conversation_model.dart';
 import '../viewmodel/messages_tab_viewmodel.dart';
@@ -115,18 +116,8 @@ class _MessageRequestsScreenState extends State<MessageRequestsScreen> {
       length: 2,
       child: Scaffold(
         backgroundColor: context.shellBackground,
-        appBar: AppBar(
-          backgroundColor: context.shellBackground,
-          elevation: 0,
-          iconTheme: IconThemeData(color: context.shellTextPrimary),
-          title: Text(
-            'Message requests',
-            style: TextStyle(
-              color: context.shellTextPrimary,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
+        appBar: SettingsAppBar(
+          title: 'Message requests',
           bottom: TabBar(
             indicatorColor: _accent,
             labelColor: _accent,

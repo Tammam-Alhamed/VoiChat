@@ -45,25 +45,28 @@ class _RechargeCenterScreenState extends State<RechargeCenterScreen> {
           children: [
             // 1. الشريط العلوي (App Bar) ومعلومات الرصيد الحالي
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsetsDirectional.only(
+                end: 16,
+                top: 4,
+                bottom: 4,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      InkWell(
-                        onTap: () => Navigator.maybePop(context),
-                        borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
+                      SizedBox(
+                        width: 44,
+                        child: IconButton(
+                          onPressed: () => Navigator.maybePop(context),
+                          icon: Icon(
                             Icons.arrow_back_ios_new,
                             color: context.shellTextPrimary,
                             size: 22,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       Text(
                         'Recharge Center',
                         style: TextStyle(

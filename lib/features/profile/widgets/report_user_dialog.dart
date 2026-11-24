@@ -39,7 +39,7 @@ class ReportUserDialog extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        "Report ",
+                        'report_user'.tr,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -49,9 +49,12 @@ class ReportUserDialog extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    "Main Report Reason:",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  Text(
+                    'report_main_reason'.tr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
 
@@ -61,6 +64,7 @@ class ReportUserDialog extends StatelessWidget {
                     builder: (context, currentReason, child) {
                       return DropdownButtonFormField<ReportReason>(
                         value: currentReason,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: context.themedColor(
@@ -88,12 +92,15 @@ class ReportUserDialog extends StatelessWidget {
                                   color: const Color(0xFF555555),
                                 ),
                                 const SizedBox(width: 10),
-                                Text(
-                                  reason
-                                      .title, // Using the title from extension
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: context.shellTextPrimary,
+                                Expanded(
+                                  child: Text(
+                                    reason.titleKey.tr,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: context.shellTextPrimary,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -108,9 +115,12 @@ class ReportUserDialog extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 16),
-                  const Text(
-                    "Additional Details (Optional):",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  Text(
+                    'report_additional_details'.tr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
 
@@ -118,8 +128,7 @@ class ReportUserDialog extends StatelessWidget {
                     controller: descController,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      hintText:
-                          "Write details to help the admin review the account...",
+                      hintText: 'report_details_hint'.tr,
                       hintStyle: const TextStyle(
                         fontSize: 13,
                         color: Colors.grey,
@@ -151,7 +160,7 @@ class ReportUserDialog extends StatelessWidget {
                               ? null
                               : () => Get.back(),
                           child: Text(
-                            "Cancel",
+                            'cancel'.tr,
                             style: TextStyle(
                               color: context.shellTextPrimary,
                               fontWeight: FontWeight.w600,
@@ -174,13 +183,18 @@ class ReportUserDialog extends StatelessWidget {
                               ? null
                               : () {
                                   // Passing the string value required by the API directly from the Extension
+                                  final reason = selectedReason.value;
+                                  final details = descController.text.trim();
+                                  final description =
+                                      reason.value == 'other' &&
+                                          reason != ReportReason.other
+                                      ? '${reason.titleKey.tr}${details.isEmpty ? '' : ': $details'}'
+                                      : details;
                                   provider.reportUser(
                                     userId: userId,
                                     userName: userName,
-                                    reason: selectedReason
-                                        .value
-                                        .value, // This returns 'spam', 'harassment', etc.
-                                    description: descController.text,
+                                    reason: reason.value,
+                                    description: description,
                                   );
                                 },
                           child: provider.reportLoader
@@ -192,9 +206,9 @@ class ReportUserDialog extends StatelessWidget {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
-                                  "Submit Report",
-                                  style: TextStyle(
+                              : Text(
+                                  'report_submit'.tr,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),

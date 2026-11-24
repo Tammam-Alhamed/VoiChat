@@ -106,20 +106,23 @@ class _FollowTabState extends State<FollowTab>
           // every other empty state in the app.
           return RefreshIndicator(
             onRefresh: () => provider.getUserFollowings(),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * .7,
-                  child: AppStateView.empty(
-                    icon: Icons.people_outline_rounded,
-                    title: searchQuery.isEmpty
-                        ? "No followings yet"
-                        : "No results found",
-                    message: "Pull down to refresh",
+            child: LayoutBuilder(
+              builder: (context, constraints) => ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: AppStateView.illustratedEmpty(
+                      icon: Icons.people_outline_rounded,
+                      iconAsset: 'assets/icons/empty_followings.svg',
+                      title: searchQuery.isEmpty
+                          ? 'no_followings_yet'.tr
+                          : 'no_results_found'.tr,
+                      message: 'pull_down_to_refresh'.tr,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }

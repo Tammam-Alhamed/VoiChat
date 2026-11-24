@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-
+import '../themes/app_dark_colors.dart';
 
 /// One consistent look for every "nothing to show" or "something went
 /// wrong" screen in the app: a soft circular icon badge, a title, an
@@ -15,6 +16,8 @@ class AppStateView extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
   final Color? iconColor;
+  final bool illustratedEmpty;
+  final String? iconAsset;
 
   const AppStateView({
     super.key,
@@ -24,6 +27,8 @@ class AppStateView extends StatelessWidget {
     this.actionLabel,
     this.onAction,
     this.iconColor,
+    this.illustratedEmpty = false,
+    this.iconAsset,
   });
 
   /// A failed request — same icon and "Retry" button everywhere.
@@ -63,39 +68,76 @@ class AppStateView extends StatelessWidget {
     );
   }
 
+  /// The centered icon/title/description layout used by content-only empty
+  /// areas. Existing error and empty states keep their original appearance.
+  factory AppStateView.illustratedEmpty({
+    Key? key,
+    required IconData icon,
+    required String title,
+    required String message,
+    String? iconAsset,
+  }) {
+    return AppStateView(
+      key: key,
+      icon: icon,
+      title: title,
+      message: message,
+      iconColor: const Color(0xFF8629F3),
+      illustratedEmpty: true,
+      iconAsset: iconAsset,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(illustratedEmpty ? 24 : 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 88,
-              height: 88,
-              decoration: BoxDecoration(
-                color: (iconColor ?? Colors.black).withOpacity(0.08),
-                shape: BoxShape.circle,
+            if (illustratedEmpty)
+              iconAsset == null
+                  ? Icon(icon, size: 64, color: iconColor)
+                  : SvgPicture.asset(
+                      iconAsset!,
+                      width: 64,
+                      height: 64,
+                      colorFilter: ColorFilter.mode(iconColor!, BlendMode.srcIn),
+                    )
+            else
+              Container(
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  color: (iconColor ?? Colors.black).withOpacity(0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 40, color: iconColor ?? Colors.black),
               ),
-              child: Icon(icon, size: 40, color: iconColor ?? Colors.black),
-            ),
-            const SizedBox(height: 20),
+            SizedBox(height: illustratedEmpty ? 24 : 20),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+              style: TextStyle(
+                fontSize: illustratedEmpty ? 22 : 17,
+                fontWeight: illustratedEmpty ? FontWeight.w400 : FontWeight.bold,
+                color: illustratedEmpty
+                    ? context.shellTextPrimary
+                    : Colors.black87,
               ),
             ),
             if (message != null) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: illustratedEmpty ? 12 : 8),
               Text(
                 message!,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                style: TextStyle(
+                  fontSize: illustratedEmpty ? 16 : 13,
+                  color: illustratedEmpty
+                      ? context.shellTextSecondary
+                      : Colors.grey.shade600,
+                ),
               ),
             ],
             if (actionLabel != null && onAction != null) ...[

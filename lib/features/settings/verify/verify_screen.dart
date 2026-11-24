@@ -28,21 +28,89 @@ class _VerifiedAccountScreenState extends State<VerifiedAccountScreen> {
           children: [
             // App Bar - Back Button
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: IconButton(
-                  onPressed: () => Navigator.maybePop(context),
-                  icon: Icon(
-                    Icons.arrow_back_ios_new,
-                    color: context.shellTextPrimary,
-                    size: 28.sp,
+                padding: EdgeInsets.symmetric(vertical: 8.h),
+                child: SizedBox(
+                  width: 44,
+                  child: IconButton(
+                    onPressed: () => Navigator.maybePop(context),
+                    icon: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: context.shellTextPrimary,
+                      size: 22,
+                    ),
                   ),
                 ),
               ),
             ),
 
-            // Scrollable content
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 10.h),
+
+                  // Main Purple Verified Icon with Shadow
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7B13E2).withOpacity(0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      "assets/icons/verified_main.png",
+                      width: 100.w,
+                      height: 100.w,
+
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+
+                  SizedBox(height: 24.h),
+
+                  // Titles
+                  Text(
+                    "Purple Verified+",
+                    style: TextStyle(
+                      color: context.shellTextPrimary,
+                      fontSize: 26.sp,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    "999 Coins /Month",
+                    style: TextStyle(
+                      color: const Color(0xFF7B13E2),
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 32.h),
+                  // Upgrade Status Button
+
+                  // Section Title
+                  Text(
+                    "Verified Account Details",
+                    style: TextStyle(
+                      color: context.shellTextPrimary,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
+                ],
+              ),
+            ),
+
+            // Only the account details scroll below the fixed offer.
             Expanded(
               child: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
@@ -50,63 +118,7 @@ class _VerifiedAccountScreenState extends State<VerifiedAccountScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 10.h),
 
-                    // Main Purple Verified Icon with Shadow
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF7B13E2).withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        "assets/icons/verified_main.png",
-                        width: 100.w,
-                        height: 100.w,
-
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-
-                    SizedBox(height: 24.h),
-
-                    // Titles
-                    Text(
-                      "Purple Verified+",
-                      style: TextStyle(
-                        color: context.shellTextPrimary,
-                        fontSize: 26.sp,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "999 Coins /Month",
-                      style: TextStyle(
-                        color: const Color(0xFF7B13E2),
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-
-                    SizedBox(height: 32.h),
-
-                    // Upgrade Status Button
-
-                    // Section Title
-                    Text(
-                      "Verified Account Details",
-                      style: TextStyle(
-                        color: context.shellTextPrimary,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
 
                     SizedBox(height: 40.h),
 

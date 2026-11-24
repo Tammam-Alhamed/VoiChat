@@ -14,7 +14,6 @@ import 'core/helpers/notification_helper.dart';
 import 'core/localization/localization_service.dart';
 import 'core/providers/provider_list.dart';
 import 'core/themes/app_dark_colors.dart';
-import 'core/themes/colors.dart';
 import 'core/themes/dark_theme.dart';
 import 'core/themes/light_theme.dart';
 import 'core/themes/theme_service.dart';
@@ -66,15 +65,6 @@ void main() async {
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  if (Platform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        systemNavigationBarColor: MainColors.mainColor,
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-    );
-  }
-
   runApp(
     MultiProvider(
       providers: ProviderManager.getProviderList(),
@@ -112,16 +102,30 @@ void main() async {
             builder: (context, child) {
               if (child == null) return const SizedBox.shrink();
               final isDark = Theme.of(context).brightness == Brightness.dark;
-              if (!isDark) return child;
-              return SkeletonizerConfig(
-                data: SkeletonizerConfigData(
-                  effect: const ShimmerEffect(
-                    baseColor: AppDarkColors.card,
-                    highlightColor: AppDarkColors.surface,
-                  ),
-                  containersColor: AppDarkColors.card,
+              final content = isDark
+                  ? SkeletonizerConfig(
+                      data: SkeletonizerConfigData(
+                        effect: const ShimmerEffect(
+                          baseColor: AppDarkColors.card,
+                          highlightColor: AppDarkColors.surface,
+                        ),
+                        containersColor: AppDarkColors.card,
+                      ),
+                      child: child,
+                    )
+                  : child;
+              return AnnotatedRegion<SystemUiOverlayStyle>(
+                value: SystemUiOverlayStyle(
+                  systemNavigationBarColor: context.shellSurface,
+                  systemNavigationBarIconBrightness:
+                      isDark ? Brightness.light : Brightness.dark,
+                  systemNavigationBarDividerColor: context.shellSurface,
+                  systemNavigationBarContrastEnforced: false,
                 ),
-                child: child,
+                child: ColoredBox(
+                  color: context.shellSurface,
+                  child: content,
+                ),
               );
             },
             home: const SplashScreen(),

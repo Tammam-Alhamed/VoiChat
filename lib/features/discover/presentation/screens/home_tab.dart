@@ -31,6 +31,26 @@ class HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
   final List<String> _tabs = ["Home", "Live", "Online", "Country"];
 
   late final TabController _tabController;
+  final GlobalKey<RefreshIndicatorState> _homeRefreshKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  void showHome() {
+    if (_tabController.index != 0) _tabController.index = 0;
+  }
+
+  Future<void> refreshHomeWithIndicator() async {
+    if (_homeRefreshKey.currentState == null) {
+      WidgetsBinding.instance.scheduleFrame();
+      await WidgetsBinding.instance.endOfFrame;
+    }
+    if (!mounted) return;
+    final indicator = _homeRefreshKey.currentState;
+    if (indicator != null) {
+      await indicator.show();
+    } else {
+      await Get.find<DiscoverController>().fetchHomeClients();
+    }
+  }
 
   @override
   void initState() {
@@ -186,20 +206,20 @@ class HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
 
                               const Spacer(),
 
-                              IconButton(
-                                icon: SvgPicture.asset(
-                                  "assets/icons/cub.svg",
-                                  width: 21,
-                                  colorFilter: context.isAppDarkMode
-                                      ? const ColorFilter.mode(
-                                          Colors.white,
-                                          BlendMode.srcIn,
-                                        )
-                                      : null,
-                                ),
-                                onPressed: () =>
-                                    Get.to(const LeaderboardScreen()),
-                              ),
+                              // IconButton(
+                              //   icon: SvgPicture.asset(
+                              //     "assets/icons/cub.svg",
+                              //     width: 21,
+                              //     colorFilter: context.isAppDarkMode
+                              //         ? const ColorFilter.mode(
+                              //             Colors.white,
+                              //             BlendMode.srcIn,
+                              //           )
+                              //         : null,
+                              //   ),
+                              //   onPressed: () =>
+                              //       Get.to(const LeaderboardScreen()),
+                              // ),
 
                               IconButton(
                                 icon: SvgPicture.asset(
@@ -293,7 +313,10 @@ class HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                     physics: const ClampingScrollPhysics(),
 
                     children: [
-                      const HomeTabContent(tabName: 'Home'),
+                      HomeTabContent(
+                        tabName: 'Home',
+                        refreshKey: _homeRefreshKey,
+                      ),
 
                       const HomeTabContent(tabName: 'Live'),
 

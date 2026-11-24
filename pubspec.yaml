@@ -79,6 +79,7 @@ flutter:
     - assets/gifts/svga/
     - assets/gifts/sounds/
     - assets/gifts/images/
+    - assets/help/
 
   fonts:
     - family: WendyOne
@@ -87,6 +88,9 @@ flutter:
     - family: ZenDots
       fonts:
         - asset: assets/fonts/ZenDots-Regular.ttf
+    - family: ProximaNova
+      fonts:
+        - asset: assets/fonts/Proxima-Nova-Regular.ttf
     - family: Roboto
       fonts:
         - asset: assets/fonts/Roboto-Thin.ttf

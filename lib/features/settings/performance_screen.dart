@@ -59,22 +59,21 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           children: [
             // 1. App Bar
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 children: [
-                  InkWell(
-                    onTap: () => Navigator.maybePop(context),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
+                  SizedBox(
+                    width: 44,
+                    child: IconButton(
+                      onPressed: () => Navigator.maybePop(context),
+                      icon: Icon(
                         Icons.arrow_back_ios_new,
                         color: context.shellTextPrimary,
                         size: 22,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   Text(
                     'Performance',
                     style: TextStyle(
